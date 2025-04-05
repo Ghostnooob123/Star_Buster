@@ -1,14 +1,17 @@
 ﻿// C.cpp : Defines the entry point for the application.
 //
 
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <memory>
+#include "C.h"
 
-int main() {
-   
+int main(int argc, char* argv[]) {
 
+    Engine en = Engine();
+
+	while (en.running())
+	{
+		en.update();
+		en.render();
+	}
 
     return 0;
 }
