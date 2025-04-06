@@ -4,6 +4,7 @@ Engine::Engine()
 {
     this->initVariables();
     this->initWindow();
+    this->initTextures();
 }
 
 Engine::~Engine()
@@ -25,18 +26,18 @@ void Engine::update()
     this->updateMouse();
     this->eventHandler();
 
-    this->updateMovement();
-    this->updateMeteor();
-    this->_player.updateStrike();
+    //this->updateMovement();
+    //this->updateMeteor();
+    //this->_player.updateStrike();
 
     if (this->_player.playerAlive()) {
-       /* this->updateMovement();
+        this->updateMovement();
         this->updateMeteor();
-        this->_player.updateStrike();*/
+        this->_player.updateStrike();
     }
     else
     {
-       // exit();
+        exit();
     }
 
 }
@@ -46,18 +47,19 @@ void Engine::render()
     SDL_SetRenderDrawColor(this->_render, 0, 0, 0, 255);
     SDL_RenderClear(this->_render);
 
-    SDL_SetRenderDrawColor(this->_render, 255, 0, 255, 255);
-    SDL_RenderFillRectF(this->_render, &this->_player.getBody());
+    SDL_RenderCopyF(this->_render, _PTexture, nullptr, &this->_player.getBody());
 
-    SDL_SetRenderDrawColor(this->_render, 255, 255, 0, 0);
-    SDL_RenderFillRectF(this->_render, &this->_player.renderStrike());
+    if (this->_player.renderStrike() != nullptr)
+    {
+        SDL_SetRenderDrawColor(this->_render, 255, 255, 0, 0);
+        SDL_RenderFillRectF(this->_render, &*this->_player.renderStrike());
+    }
 
     for (size_t i = 0; i < meteors.size(); i++)
     {
-        SDL_SetRenderDrawColor(this->_render, 255, 0, 0, 0);
         if (meteors[i] != nullptr)
         {
-            SDL_RenderFillRectF(this->_render, &meteors[i]->getBody());
+            SDL_RenderCopyF(this->_render, _MTexture, nullptr, &meteors[i]->getBody());
         }
     }
 
@@ -76,7 +78,6 @@ void Engine::updateMeteor()
     {
         for (size_t i = 0; i < meteorCap; i++)
         {
-
             std::shared_ptr<Meteor> meteor = std::make_shared<Meteor>();
 
             meteors.push_back(meteor);
@@ -84,7 +85,7 @@ void Engine::updateMeteor()
     }
 
     for (size_t i = 0; i < meteorCap - 1; i++) {
-        if (checkCollisionPtr(meteors[i], meteors[i + 1])) {
+        if (checkCollisionF(meteors[i]->getBody(), meteors[i + 1]->getBody())) {
             meteors[i + 1] = nullptr;
         }
     }
@@ -93,33 +94,46 @@ void Engine::updateMeteor()
     {
         if (meteors[i] != nullptr)
         {
-            move(0.0f, meteors[i]->getSpeed(), meteors[i]);
+            moveObj(0.0f, meteors[i]->getSpeed(), meteors[i]);
 
-            if (meteors[i]->getBody().y + meteors[i]->getBody().h > SCREEN_HEIGHT + 100)
+            bool outOfBounds = meteors[i]->getBody().y < 0 ||
+                meteors[i]->getBody().y + meteors[i]->getBody().h > SCREEN_HEIGHT + 100 ||
+                meteors[i]->getBody().x < 0 ||
+                meteors[i]->getBody().x + meteors[i]->getBody().w > SCREEN_WIDTH;
+
+            bool hit = this->_player.getStrikeBody() != nullptr &&
+                checkCollisionF(*this->_player.getStrikeBody(), meteors[i]->getBody());
+
+            if (hit)
+            {
+                meteors[i]->takeDamage(50.0f);
+                if (meteors[i]->getHealth() <= 0.0f) {
+                    meteors[i] = nullptr;
+                }
+                this->_player.getStrikeBody() = nullptr;
+            }
+            else if (outOfBounds)
             {
                 meteors[i] = nullptr;
             }
-        }
-
-       
+        }  
     }
 
-    bool reset = false;
+    bool reset = true;
+
     for (size_t i = 0; i < meteorCap; i++)
     {
-        if (meteors[i] == nullptr)
-        {
-            reset = true;
-        }
-        else
+        if (meteors[i] != nullptr)
         {
             reset = false;
+            break;
         }
     }
     if (reset)
     {
         meteors.clear();
     }
+
 }
 
 void Engine::eventHandler()
@@ -135,7 +149,10 @@ void Engine::eventHandler()
                 break;
             } 
             if (this->_event.key.keysym.sym == SDLK_SPACE) {
-                this->_player.shoot();
+                if (this->_player.getStrikeBody() == nullptr)
+                {
+                    this->_player.shoot();
+                }
             }
         }
         if (this->_event.type = SDL_MOUSEBUTTONDOWN && this->_event.button.button == SDL_BUTTON_LEFT)
@@ -144,7 +161,7 @@ void Engine::eventHandler()
             {
                 exit();
             }
-        }                                           
+        }
     }
 }
 
@@ -209,4 +226,23 @@ void Engine::initWindow()
     );
 
     this->_render = SDL_CreateRenderer(this->_window, -1, SDL_RENDERER_ACCELERATED);
+}
+
+void Engine::initTextures()
+{
+    this->_surface = IMG_Load("Star_Buster/ship.png");
+    this->_PTexture = SDL_CreateTextureFromSurface(this->_render, this->_surface);
+    SDL_FreeSurface(this->_surface);
+
+    this->_surface = IMG_Load("Star_Buster/meteor.png");
+    this->_MTexture = SDL_CreateTextureFromSurface(this->_render, this->_surface);
+    SDL_FreeSurface(this->_surface);
+
+    this->_surface = IMG_Load("Star_Buster/smallEx.png");
+    this->_SmExTexture = SDL_CreateTextureFromSurface(this->_render, this->_surface);
+    SDL_FreeSurface(this->_surface);
+
+    this->_surface = IMG_Load("Star_Buster/bigEx.png");
+    this->_BigExTexture = SDL_CreateTextureFromSurface(this->_render, this->_surface);
+    SDL_FreeSurface(this->_surface);
 }

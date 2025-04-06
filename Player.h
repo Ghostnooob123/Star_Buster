@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#include <memory>
+
 #include "Consts.h"
 #include "templateFunc.hpp"
 
@@ -13,14 +15,16 @@ public:
 	~Player();
 
 	SDL_FRect& getBody();
+	const std::shared_ptr< SDL_FRect>& renderStrike();
+	std::shared_ptr< SDL_FRect>& getStrikeBody();
 	void updateStrike();
-	const SDL_FRect& renderStrike();
 	void shoot();
 	void takeDamage(float dmg);
 	const bool playerAlive();
 private:
 	SDL_FRect _player;
-	SDL_FRect _strike;
+	std::shared_ptr<SDL_FRect> _strike = nullptr;
 	float _health = 100.0f;
+	bool _rightWep = true;
 };
 #endif // !PLAYER_H

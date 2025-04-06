@@ -6,6 +6,8 @@
 #include <memory>
 
 #include <SDL2/SDL.h>
+#include <SDL_image.h>
+
 #include "Consts.h"
 #include "templateFunc.hpp"
 
@@ -29,6 +31,11 @@ private:
 	SDL_Window* _window;
 	SDL_Renderer* _render;
 	SDL_Event _event;
+	SDL_Surface* _surface;
+	SDL_Texture* _PTexture;
+	SDL_Texture* _MTexture;
+	SDL_Texture* _SmExTexture;
+	SDL_Texture* _BigExTexture;
 
 	int _mouseX, _mouseY;
 
@@ -46,5 +53,6 @@ private:
 
 	void initVariables();
 	void initWindow();
+	void initTextures();
 };
 #endif // !ENGINE_H

@@ -23,16 +23,16 @@ void move(float x, float y, T& rect)
     rect.y += y;
 }
 template<typename T>
+void moveObj(float x, float y, std::shared_ptr<T>& rectClass)
+{
+    rectClass->getBody().x += x;
+    rectClass->getBody().y += y;
+}
+template<typename T>
 void move(float x, float y, std::shared_ptr<T>& rect)
 {
-    rect->getBody().x += x;
-    rect->getBody().y += y;
-}
-
-template<typename T>
-bool checkCollisionPtr(std::shared_ptr<T>& rect1, std::shared_ptr<T>& rect2) {
-
-   return SDL_HasIntersectionF(&rect1->getBody(), &rect2->getBody());
+    rect->x += x;
+    rect->y += y;
 }
 
 template<typename T>
