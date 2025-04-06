@@ -6,6 +6,10 @@ Player::Player()
     this->_player.y = (SCREEN_HEIGHT / 2) + 200;
     this->_player.w = 50;
     this->_player.h = 50;
+
+    this->_health = 100.0f;
+    this->_rightWep = true;
+    this->_strike = nullptr;
 }
 
 Player::~Player()

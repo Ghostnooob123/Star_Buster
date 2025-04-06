@@ -23,8 +23,8 @@ public:
 	const bool playerAlive();
 private:
 	SDL_FRect _player;
-	std::shared_ptr<SDL_FRect> _strike = nullptr;
-	float _health = 100.0f;
-	bool _rightWep = true;
+	std::shared_ptr<SDL_FRect> _strike;
+	float _health;
+	bool _rightWep;
 };
 #endif // !PLAYER_H

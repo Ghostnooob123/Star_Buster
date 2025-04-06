@@ -14,17 +14,11 @@ set(CMAKE_TOOLCHAIN_FILE "vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "
 project ("C")
 
 # Add source to this project's executable.
-add_executable (C "C.cpp" "C.h" "Engine.h" "Engine.cpp"    "Player.h" "Player.cpp" "Consts.h")
+add_executable (C "C.cpp" "C.h" "Engine.h" "Engine.cpp"    "Player.h" "Player.cpp" "Consts.h" "Meteor.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET C PROPERTY CXX_STANDARD 20)
 endif()
-
-find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(C PRIVATE glfw)
-
-find_package(glad CONFIG REQUIRED)
-target_link_libraries(C PRIVATE glad::glad)
 
 find_package(SDL2 CONFIG REQUIRED)
     target_link_libraries(C

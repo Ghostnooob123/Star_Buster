@@ -38,10 +38,12 @@ private:
 	SDL_Texture* _BigExTexture;
 
 	int _mouseX, _mouseY;
+	Uint32 startTime = SDL_GetTicks();
 
 	Player _player;
 
 	bool _close;
+	int _spawnM;
 
 	std::vector<std::shared_ptr<Meteor>> meteors;
 	void updateMeteor();

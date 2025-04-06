@@ -74,7 +74,7 @@ void Engine::updateMeteor()
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrY(0, 1);
 
-    if (meteors.size() == 0)
+    if (SDL_GetTicks() - startTime >= 3000 && meteors.size() == 0)
     {
         for (size_t i = 0; i < meteorCap; i++)
         {
@@ -82,21 +82,24 @@ void Engine::updateMeteor()
 
             meteors.push_back(meteor);
         }
-    }
 
-    for (size_t i = 0; i < meteorCap - 1; i++) {
-        if (checkCollisionF(meteors[i]->getBody(), meteors[i + 1]->getBody())) {
-            meteors[i + 1] = nullptr;
+        for (size_t i = 0; i < meteors.size() - 1; i++) {
+            if (checkCollisionF(meteors[i]->getBody(), meteors[i + 1]->getBody())) {
+                meteors[i + 1] = nullptr;
+            }
         }
+
+        startTime = SDL_GetTicks();
     }
 
-    for (size_t i = 0; i < meteorCap; i++)
+    bool reset = true;
+    for (size_t i = 0; i < meteors.size(); i++)
     {
         if (meteors[i] != nullptr)
         {
             moveObj(0.0f, meteors[i]->getSpeed(), meteors[i]);
 
-            bool outOfBounds = meteors[i]->getBody().y < 0 ||
+            bool outOfBounds = meteors[i]->getBody().y < -110.0f ||
                 meteors[i]->getBody().y + meteors[i]->getBody().h > SCREEN_HEIGHT + 100 ||
                 meteors[i]->getBody().x < 0 ||
                 meteors[i]->getBody().x + meteors[i]->getBody().w > SCREEN_WIDTH;
@@ -116,19 +119,11 @@ void Engine::updateMeteor()
             {
                 meteors[i] = nullptr;
             }
+
+            reset = false;
         }  
     }
 
-    bool reset = true;
-
-    for (size_t i = 0; i < meteorCap; i++)
-    {
-        if (meteors[i] != nullptr)
-        {
-            reset = false;
-            break;
-        }
-    }
     if (reset)
     {
         meteors.clear();
@@ -207,6 +202,7 @@ void Engine::exit()
 void Engine::initVariables()
 {
     this->_close = false;
+    this->_spawnM = 0;
 }
 
 void Engine::initWindow()
@@ -230,19 +226,19 @@ void Engine::initWindow()
 
 void Engine::initTextures()
 {
-    this->_surface = IMG_Load("Star_Buster/ship.png");
+    this->_surface = IMG_Load("textures/ship.png");
     this->_PTexture = SDL_CreateTextureFromSurface(this->_render, this->_surface);
     SDL_FreeSurface(this->_surface);
 
-    this->_surface = IMG_Load("Star_Buster/meteor.png");
+    this->_surface = IMG_Load("textures/meteor.png");
     this->_MTexture = SDL_CreateTextureFromSurface(this->_render, this->_surface);
     SDL_FreeSurface(this->_surface);
 
-    this->_surface = IMG_Load("Star_Buster/smallEx.png");
+    this->_surface = IMG_Load("textures/smallEx.png");
     this->_SmExTexture = SDL_CreateTextureFromSurface(this->_render, this->_surface);
     SDL_FreeSurface(this->_surface);
 
-    this->_surface = IMG_Load("Star_Buster/bigEx.png");
+    this->_surface = IMG_Load("textures/bigEx.png");
     this->_BigExTexture = SDL_CreateTextureFromSurface(this->_render, this->_surface);
     SDL_FreeSurface(this->_surface);
 }
