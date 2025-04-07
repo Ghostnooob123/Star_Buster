@@ -6,6 +6,10 @@ Player::Player()
     this->_player.y = (SCREEN_HEIGHT / 2) + 200;
     this->_player.w = 50;
     this->_player.h = 50;
+
+    this->_health = 100.0f;
+    this->_rightWep = true;
+    this->_strike = nullptr;
 }
 
 Player::~Player()
@@ -20,44 +24,58 @@ SDL_FRect& Player::getBody()
 
 void Player::updateStrike()
 {
-    if (this->_strike != nullptr)
+    if (this->existingStrike())
     {
-        move(0.0f, -0.15f, this->_strike);
+        moveObj(0.0f, -15.0f, this->_strike);
 
-        if (this->_strike->y < 0) {
-            this->_strike = nullptr;
+        if (this->_strike->getBody().y < 0) {
+            this->rmvStrike();
         }
     }
 }
 
-const std::shared_ptr< SDL_FRect>& Player::renderStrike()
+const SDL_FRect& Player::renderStrike()
 {
-    return this->_strike;
+    return this->_strike->getBody();
 }
 
-std::shared_ptr< SDL_FRect>& Player::getStrikeBody()
+SDL_FRect& Player::getStrikeBody()
 {
-    return this->_strike;
+    return this->_strike->getBody();
+}
+
+const bool Player::existingStrike()
+{
+    if (this->_strike != nullptr)
+    {
+        return true;
+    }
+    return false;
+}
+
+void Player::rmvStrike()
+{
+    this->_strike = nullptr;
 }
 
 void Player::shoot()
 {
-    this->_strike = std::make_shared<SDL_FRect>();
-    if (this->_strike != nullptr)
+    this->_strike = std::make_shared<Strike>();
+    if (this->existingStrike())
     {
-        this->_strike->w = 10;
-        this->_strike->h = 40;
+        this->_strike->getBody().w = 5;
+        this->_strike->getBody().h = 40;
         if (this->_rightWep)
         {
-            this->_strike->x = this->_player.x;
+            this->_strike->getBody().x = this->_player.x;
             this->_rightWep = false;
         }
         else
         {
-            this->_strike->x = this->_player.x + 40.0f;
+            this->_strike->getBody().x = this->_player.x + 40.0f;
             this->_rightWep = true;
         }
-        this->_strike->y = this->_player.y;
+        this->_strike->getBody().y = this->_player.y;
     }
 }
 
