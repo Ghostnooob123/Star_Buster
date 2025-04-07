@@ -15,15 +15,25 @@ public:
 	~Player();
 
 	SDL_FRect& getBody();
-	const std::shared_ptr< SDL_FRect>& renderStrike();
-	std::shared_ptr< SDL_FRect>& getStrikeBody();
+	const SDL_FRect& renderStrike();
+	SDL_FRect& getStrikeBody();
+	const bool existingStrike();
+	void rmvStrike();
 	void updateStrike();
 	void shoot();
 	void takeDamage(float dmg);
 	const bool playerAlive();
 private:
+	class Strike {
+	public:
+		SDL_FRect& getBody() {
+			return _body;
+		}
+	private:
+		SDL_FRect _body;
+	};
 	SDL_FRect _player;
-	std::shared_ptr<SDL_FRect> _strike;
+	std::shared_ptr<Strike> _strike;
 	float _health;
 	bool _rightWep;
 };

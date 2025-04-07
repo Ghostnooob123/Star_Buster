@@ -3,7 +3,7 @@
 Meteor::Meteor() {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> distrX(100, 850);
+	std::uniform_int_distribution<> distrX(200, 750);
 
 	this->_body.x = static_cast<float>(distrX(gen));
 	this->_body.y = -100.0f;
@@ -12,19 +12,16 @@ Meteor::Meteor() {
 
 	this->_health = 100.0f;
 
-	this->_speed = 0.004f;
+	this->_speed = 0.3f;
 
-	std::uniform_int_distribution<> distrY(0, 2);
+	std::uniform_int_distribution<> distrY(0, 1);
 	if (distrY(gen) == 0)
 	{
-		this->_speed = 0.004f;
-	}if (distrY(gen) == 1)
-	{
-		this->_speed = 0.005f;
+		this->_speed = 0.3f;
 	}
-	if (distrY(gen) == 2)
+	if (distrY(gen) == 1)
 	{
-		this->_speed = 0.007f;
+		this->_speed = 0.4f;
 	}
 }
 
