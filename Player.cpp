@@ -7,9 +7,11 @@ Player::Player()
     this->_player.w = 50;
     this->_player.h = 50;
 
-    this->_health = 100.0f;
+    this->_health = 100;
     this->_rightWep = true;
     this->_strike = nullptr;
+
+    this->_PTexture = nullptr;
 }
 
 Player::~Player()
@@ -26,7 +28,7 @@ void Player::updateStrike()
 {
     if (this->existingStrike())
     {
-        moveObj(0.0f, -15.0f, this->_strike);
+        moveObj(0.0f, -16.0f, this->_strike);
 
         if (this->_strike->getBody().y < 0) {
             this->rmvStrike();
@@ -44,7 +46,7 @@ SDL_FRect& Player::getStrikeBody()
     return this->_strike->getBody();
 }
 
-const bool Player::existingStrike()
+bool Player::existingStrike()
 {
     if (this->_strike != nullptr)
     {
@@ -79,15 +81,30 @@ void Player::shoot()
     }
 }
 
-void Player::takeDamage(float dmg)
+void Player::takeDamage(int dmg)
 {
     this->_health -= dmg;
 }
 
-const bool Player::playerAlive()
+bool Player::playerAlive()
 {
-    if (this->_health != 0.0f) {
+    if (this->_health != 0) {
         return true;
     }
     return false;
+}
+
+int Player::getHealth()
+{
+    return this->_health;
+}
+
+void Player::setTexture(SDL_Texture* _newTexture)
+{
+    this->_PTexture = _newTexture;
+}
+
+SDL_Texture* Player::getTexture()
+{
+    return this->_PTexture;
 }

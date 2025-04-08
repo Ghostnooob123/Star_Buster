@@ -14,7 +14,8 @@ set(CMAKE_TOOLCHAIN_FILE "vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "
 project ("C")
 
 # Add source to this project's executable.
-add_executable (C "C.cpp" "C.h" "Engine.h" "Engine.cpp"    "Player.h" "Player.cpp" "Consts.h" "Meteor.cpp")
+add_executable (C "C.cpp" "C.h" "Engine.h" "Engine.cpp" "Player.h" "Player.cpp" "Consts.h" "Meteor.cpp" 
+"Meteor.h" "templateFunc.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET C PROPERTY CXX_STANDARD 20)

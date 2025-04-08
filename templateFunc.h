@@ -1,5 +1,5 @@
-#ifndef TEMPLATE_FUNC_HPP
-#define  TEMPLATE_FUNC_HPP
+#ifndef TEMPLATE_FUNC_H
+#define  TEMPLATE_FUNC_H
 
 #include <SDL2/SDL.h>
 #include <memory>
@@ -42,4 +42,4 @@ bool checkCollision(T& rect1, T& rect2) {
     return SDL_HasIntersection(&rect1, &rect2);
 }
 
-#endif // ! TEMPLATE_FUNC_HPP
+#endif // ! TEMPLATE_FUNC_H

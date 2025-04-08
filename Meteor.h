@@ -8,15 +8,18 @@ class Meteor {
 public:
 	Meteor();
 
-	const float getSpeed();
+	float getSpeed();
 	SDL_FRect& getBody();
-	void takeDamage(float dmg);
-	const float getHealth();
+	void takeDamage(int dmg);
+	int getHealth();
+	void setTexture(SDL_Texture* t);
+	SDL_Texture* getTexture();
 
 private:
 	SDL_FRect _body;
 	float _speed;
-	float _health;
+	int _health;
+	SDL_Texture* _MTexture;
 };
 
 #endif METEOR_HPP
