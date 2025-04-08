@@ -4,16 +4,17 @@
 #include <iostream>
 #include <random>
 #include <memory>
+#include <string>
 
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
 #include "Consts.h"
-#include "templateFunc.hpp"
+#include "templateFunc.h"
 
 #include "Player.h"
-#include "Meteor.hpp"
+#include "Meteor.h"
 
 class Engine
 {
@@ -27,42 +28,45 @@ public:
 	void render();
 
 private:
-	SDL_Window* _window;
-	SDL_Renderer* _renderer;
-	SDL_Event _event;
+	SDL_Window* _window; // Window
+	SDL_Renderer* _renderer; // Renderer
+	SDL_Event _event; // Event handler
 
 	SDL_Surface* _surface;
-	SDL_Texture* _PTexture;
-	SDL_Texture* _MTexture;
-	SDL_Texture* _SmExTexture;
-	SDL_Texture* _BigExTexture;
-	SDL_Texture* _BGTexture;
+	SDL_Texture* _PTexture;	 // Player texture
+	SDL_Texture* _P2Texture; // Player_second texture for animation
+	std::shared_ptr<SDL_Texture*> _PAnim[2]; // Stores 2 animatons for player
+	SDL_Texture* _MTexture;	// Meteor texture
+	SDL_Texture* _BGTexture; // Backgound texture
 
-	TTF_Font* _fontUI;
-	SDL_Surface* _surfaceText;
+	SDL_Texture* _SmExTexture; // Small explosion texture
+	SDL_Texture* _BigExTexture;	// Big explosion texture
+	std::shared_ptr<SDL_Texture*> _ExAnim[2]; // Stores 2 animatons for explosion
 
-	// Points UI
-	SDL_Texture* _pointsTexture;
-	SDL_Rect _pointsBody;
+	TTF_Font* _fontUI; // TTF for global font UI
+	SDL_Surface* _surfaceText; // Surface only for UI
 
+	// Health UI
+	SDL_Texture* _healthTexture; // UI texture for health
+	SDL_Rect _healthBody; // UI body for health
+	std::string _strH; // Updates health string
 
-	int _mouseX, _mouseY;
-	Uint32 _startTime = SDL_GetTicks();
-	Uint32 _animationTime = SDL_GetTicks();
+	int _mouseX, _mouseY; // mouse x and y cords
+	Uint32 _startTime; // Start gane timer
+	Uint32 _PAnimTime; // Player animation refresh
+	Uint32 _ExAnimTime;	// Explosion delay between the frames
 
-	Player _player;
+	Player _player; // Player object
 
 	bool _close;
-	int _spawnM;
 
-
-	SDL_Rect _bgBody;
-	std::vector<std::shared_ptr<Meteor>> meteors;
-	void updateMeteor();
+	SDL_Rect _bgBody; // Background rect 
+	std::vector<std::shared_ptr<Meteor>> _meteors; // Stores meteors objects
+	void updateMeteor(); // Updates meteor object
 	
 	void eventHandler();
 	void updateMouse();
-	void updateMovement();
+	void updatePlayer(); // Updates player object
 	void exit();
 
 	void initVariables();
