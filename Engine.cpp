@@ -135,6 +135,16 @@ void Engine::updateMeteor()
                 this->_meteors[i] = nullptr;
             }
 
+            if (this->_meteors[i]->getTexture() == this->_MTexture && this->_meteors[i] != nullptr &&
+                checkCollisionF(this->_player.getBody(), this->_meteors[i]->getBody()))
+            {
+                this->_player.takeDamage(10);
+                this->_strH = "HP: " + std::to_string(this->_player.getHealth());
+
+                this->_meteors[i]->setTexture(this->_SmExTexture);
+                this->_ExAnimTime = SDL_GetTicks();
+            }
+
             if (this->_meteors[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 200 &&
                 this->_meteors[i]->getTexture() == this->_SmExTexture)
             {
@@ -217,15 +227,6 @@ void Engine::updatePlayer()
     if (this->_player.getBody().y < 0) this->_player.getBody().y = 0;
     if (this->_player.getBody().y + this->_player.getBody().h > SCREEN_HEIGHT + 40.0f) this->_player.getBody().y = 
         (SCREEN_HEIGHT + 40.0f ) - this->_player.getBody().h;
-    for (size_t i = 0; i < this->_meteors.size(); i++)
-    {
-        if (checkCollisionF(this->_player.getBody(), this->_meteors[i]->getBody()))
-        {
-            this->_player.takeDamage(10);
-            this->_meteors[i] = nullptr;
-            this->_strH = "HP: " + std::to_string(this->_player.getHealth());
-        }
-    }
 
     if (SDL_GetTicks() - this->_PAnimTime >= 100)
     {

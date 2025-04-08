@@ -101,7 +101,10 @@ int Player::getHealth()
 
 void Player::setTexture(SDL_Texture* _newTexture)
 {
-    this->_PTexture = _newTexture;
+    if (_newTexture)
+    {
+        this->_PTexture = _newTexture;
+    }
 }
 
 SDL_Texture* Player::getTexture()

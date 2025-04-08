@@ -46,7 +46,10 @@ int Meteor::getHealth() {
 
 void Meteor::setTexture(SDL_Texture* _newTexture)
 {
-	this->_MTexture = _newTexture;
+	if (_newTexture)
+	{
+		this->_MTexture = _newTexture;
+	}
 }
 
 SDL_Texture* Meteor::getTexture()
