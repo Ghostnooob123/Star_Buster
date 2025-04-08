@@ -310,8 +310,6 @@ void Engine::initTextures()
     }
     SDL_FreeSurface(this->_surface);
     this->_player.setTexture(this->_PTexture);
-    this->_PAnim[0] = std::make_shared<SDL_Texture*>(_PTexture);
-    this->_PAnim[1] = std::make_shared<SDL_Texture*>(_P2Texture);
 
     // METEOR TEXTURES
     this->_surface = IMG_Load("textures/meteor.png");
@@ -334,8 +332,6 @@ void Engine::initTextures()
         std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
     }
     SDL_FreeSurface(this->_surface);
-    this->_ExAnim[0] = std::make_shared<SDL_Texture*>(_SmExTexture);
-    this->_ExAnim[1] = std::make_shared<SDL_Texture*>(_BigExTexture);
 
     // BACKGROUND TEXTURES
     this->_surface = IMG_Load("textures/bg.png");

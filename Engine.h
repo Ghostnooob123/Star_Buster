@@ -35,13 +35,11 @@ private:
 	SDL_Surface* _surface;
 	SDL_Texture* _PTexture;	 // Player texture
 	SDL_Texture* _P2Texture; // Player_second texture for animation
-	std::shared_ptr<SDL_Texture*> _PAnim[2]; // Stores 2 animatons for player
 	SDL_Texture* _MTexture;	// Meteor texture
 	SDL_Texture* _BGTexture; // Backgound texture
 
 	SDL_Texture* _SmExTexture; // Small explosion texture
 	SDL_Texture* _BigExTexture;	// Big explosion texture
-	std::shared_ptr<SDL_Texture*> _ExAnim[2]; // Stores 2 animatons for explosion
 
 	TTF_Font* _fontUI; // TTF for global font UI
 	SDL_Surface* _surfaceText; // Surface only for UI

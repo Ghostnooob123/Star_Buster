@@ -10,6 +10,8 @@ Player::Player()
     this->_health = 100;
     this->_rightWep = true;
     this->_strike = nullptr;
+
+    this->_PTexture = nullptr;
 }
 
 Player::~Player()
@@ -26,7 +28,7 @@ void Player::updateStrike()
 {
     if (this->existingStrike())
     {
-        moveObj(0.0f, -15.0f, this->_strike);
+        moveObj(0.0f, -16.0f, this->_strike);
 
         if (this->_strike->getBody().y < 0) {
             this->rmvStrike();
