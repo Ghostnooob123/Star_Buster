@@ -28,9 +28,9 @@ void Player::updateStrike()
 {
     if (this->existingStrike())
     {
-        moveObj(0.0f, -16.0f, this->_strike);
+        moveObj(0.0f, -15.0f, this->_strike);
 
-        if (this->_strike->getBody().y < 0) {
+        if (this->_strike->getBody().y < -20.0f) {
             this->rmvStrike();
         }
     }
@@ -65,16 +65,16 @@ void Player::shoot()
     this->_strike = std::make_shared<Strike>();
     if (this->existingStrike())
     {
-        this->_strike->getBody().w = 5;
-        this->_strike->getBody().h = 40;
+        this->_strike->getBody().w = 40;
+        this->_strike->getBody().h = 60;
         if (this->_rightWep)
         {
-            this->_strike->getBody().x = this->_player.x;
+            this->_strike->getBody().x = this->_player.x - 10.0f;
             this->_rightWep = false;
         }
         else
         {
-            this->_strike->getBody().x = this->_player.x + 40.0f;
+            this->_strike->getBody().x = this->_player.x + 20.0f;
             this->_rightWep = true;
         }
         this->_strike->getBody().y = this->_player.y;

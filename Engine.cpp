@@ -50,8 +50,7 @@ void Engine::render()
 
     if (this->_player.existingStrike())
     {
-        SDL_SetRenderDrawColor(this->_renderer, 245, 41, 10, 0);
-        SDL_RenderFillRectF(this->_renderer, &this->_player.renderStrike());
+        SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &this->_player.getStrikeBody());
     }
 
     for (size_t i = 0; i < this->_meteors.size(); i++)
@@ -337,6 +336,14 @@ void Engine::initTextures()
     this->_surface = IMG_Load("textures/bg.png");
     this->_BGTexture = SDL_CreateTextureFromSurface(this->_renderer, this->_surface);
     if (!this->_BGTexture) {
+        std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
+    }
+    SDL_FreeSurface(this->_surface);
+
+    // STRIKE TEXTURES
+    this->_surface = IMG_Load("textures/strike.png");
+    this->_STexture = SDL_CreateTextureFromSurface(this->_renderer, this->_surface);
+    if (!this->_STexture) {
         std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
     }
     SDL_FreeSurface(this->_surface);

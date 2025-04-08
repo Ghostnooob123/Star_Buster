@@ -37,6 +37,7 @@ private:
 	SDL_Texture* _P2Texture; // Player_second texture for animation
 	SDL_Texture* _MTexture;	// Meteor texture
 	SDL_Texture* _BGTexture; // Backgound texture
+	SDL_Texture* _STexture; // Strike texture
 
 	SDL_Texture* _SmExTexture; // Small explosion texture
 	SDL_Texture* _BigExTexture;	// Big explosion texture
