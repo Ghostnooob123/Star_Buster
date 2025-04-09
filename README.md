@@ -1,6 +1,5 @@
 # Star Buster
 Star Buster is singleplayer game inspired by space shooter games.
-![alt text](image.png)
 
 
 ## How to Use
