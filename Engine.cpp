@@ -149,7 +149,7 @@ void Engine::updateMeteor()
                 this->_meteors[i] = nullptr;
             }
 
-            if (this->_meteors[i]->getTexture() == this->_MTexture && this->_meteors[i] != nullptr &&
+            if (this->_meteors[i] != nullptr && this->_meteors[i]->getTexture() == this->_MTexture &&
                 checkCollisionF(this->_player.getBody(), this->_meteors[i]->getBody()))
             {
                 this->_player.takeDamage(10);
@@ -204,9 +204,10 @@ void Engine::eventHandler()
                 break;
             } 
             if (this->_event.key.keysym.sym == SDLK_SPACE) {
-                if (!this->_player.existingStrike())
+                if (!this->_player.existingStrike() && SDL_GetTicks() - this->_PlayerSTime >= 500)
                 {
                     this->_player.shoot();
+                    this->_PlayerSTime = SDL_GetTicks();
                 }
             }
         }
@@ -363,6 +364,7 @@ void Engine::initVariables()
     this->_ExAnimTime = SDL_GetTicks();
     this->_EnemyTime = SDL_GetTicks();
     this->_EnemySTime = SDL_GetTicks();
+    this->_PlayerSTime = SDL_GetTicks();
 
     this->_bgBody.x = 0;
     this->_bgBody.y = 0;

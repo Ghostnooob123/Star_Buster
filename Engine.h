@@ -59,6 +59,7 @@ private:
 	Uint32 _PAnimTime; // Player animation refresh
 	Uint32 _ExAnimTime;	// Explosion delay between the frames
 	Uint32 _EnemyTime; // Enemy spawn timer
+	Uint32 _PlayerSTime; // Player strike interval 
 	Uint32 _EnemySTime; // Enemy strike interval 
 
 	SDL_Rect _bgBody; // Background rect 
