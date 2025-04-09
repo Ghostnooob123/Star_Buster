@@ -81,6 +81,14 @@ build CMakeFiles\C.dir\Meteor.cpp.obj: CXX_COMPILER__C_unscanned_Release D$:\Vis
   TARGET_COMPILE_PDB = CMakeFiles\C.dir\
   TARGET_PDB = C.pdb
 
+build CMakeFiles\C.dir\Enemy.cpp.obj: CXX_COMPILER__C_unscanned_Release D$:\Visual$ Studio\C\Enemy.cpp || cmake_object_order_depends_target_C
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG -std:c++20
+  INCLUDES = -external:I"D:\Visual Studio\C\vcpkg\installed\x64-windows\include" -external:I"D:\Visual Studio\C\vcpkg\installed\x64-windows\include\SDL2" -external:W0
+  OBJECT_DIR = CMakeFiles\C.dir
+  OBJECT_FILE_DIR = CMakeFiles\C.dir
+  TARGET_COMPILE_PDB = CMakeFiles\C.dir\
+  TARGET_PDB = C.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target C
@@ -89,7 +97,7 @@ build CMakeFiles\C.dir\Meteor.cpp.obj: CXX_COMPILER__C_unscanned_Release D$:\Vis
 #############################################
 # Link the executable C.exe
 
-build C.exe: CXX_EXECUTABLE_LINKER__C_Release CMakeFiles\C.dir\C.cpp.obj CMakeFiles\C.dir\Engine.cpp.obj CMakeFiles\C.dir\Player.cpp.obj CMakeFiles\C.dir\Meteor.cpp.obj | D$:\Visual$ Studio\C\vcpkg\installed\x64-windows\lib\manual-link\SDL2main.lib D$:\Visual$ Studio\C\vcpkg\installed\x64-windows\lib\SDL2_image.lib D$:\Visual$ Studio\C\vcpkg\installed\x64-windows\lib\SDL2_ttf.lib D$:\Visual$ Studio\C\vcpkg\installed\x64-windows\lib\SDL2.lib
+build C.exe: CXX_EXECUTABLE_LINKER__C_Release CMakeFiles\C.dir\C.cpp.obj CMakeFiles\C.dir\Engine.cpp.obj CMakeFiles\C.dir\Player.cpp.obj CMakeFiles\C.dir\Meteor.cpp.obj CMakeFiles\C.dir\Enemy.cpp.obj | D$:\Visual$ Studio\C\vcpkg\installed\x64-windows\lib\manual-link\SDL2main.lib D$:\Visual$ Studio\C\vcpkg\installed\x64-windows\lib\SDL2_image.lib D$:\Visual$ Studio\C\vcpkg\installed\x64-windows\lib\SDL2_ttf.lib D$:\Visual$ Studio\C\vcpkg\installed\x64-windows\lib\SDL2.lib
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MD /O2 /Ob2 /DNDEBUG
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:console
   LINK_LIBRARIES = "D:\Visual Studio\C\vcpkg\installed\x64-windows\lib\manual-link\SDL2main.lib"  "D:\Visual Studio\C\vcpkg\installed\x64-windows\lib\SDL2_image.lib"  "D:\Visual Studio\C\vcpkg\installed\x64-windows\lib\SDL2_ttf.lib"  shell32.lib  "D:\Visual Studio\C\vcpkg\installed\x64-windows\lib\SDL2.lib"  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
