@@ -35,7 +35,7 @@ private:
 	private:
 		SDL_FRect _body;
 	};
-	SDL_FRect _player;
+	SDL_FRect _body;
 
 	std::shared_ptr<Strike> _strike;
 	SDL_Texture* _PTexture;

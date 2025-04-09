@@ -7,8 +7,8 @@ Meteor::Meteor() {
 
 	this->_body.x = static_cast<float>(distrX(gen));
 	this->_body.y = -100.0f;
-	this->_body.h = 50.0f;
 	this->_body.w = 70.0f;
+	this->_body.h = 50.0f;
 
 	this->_health = 100;
 
@@ -25,6 +25,11 @@ Meteor::Meteor() {
 	{
 		this->_speed = 0.3f;
 	}
+}
+
+Meteor::~Meteor()
+{
+	
 }
 
 float Meteor::getSpeed()

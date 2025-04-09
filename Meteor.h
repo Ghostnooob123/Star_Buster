@@ -7,7 +7,7 @@
 class Meteor {
 public:
 	Meteor();
-
+	~Meteor();
 	float getSpeed();
 	SDL_FRect& getBody();
 	void takeDamage(int dmg);
