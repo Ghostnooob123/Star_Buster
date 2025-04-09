@@ -2,10 +2,10 @@
 
 Player::Player()
 {
-    this->_player.x = SCREEN_WIDTH / 2;
-    this->_player.y = (SCREEN_HEIGHT / 2) + 200;
-    this->_player.w = 50;
-    this->_player.h = 50;
+    this->_body.x = SCREEN_WIDTH / 2.0f;
+    this->_body.y = (SCREEN_HEIGHT / 2.0f) + 200.0f;
+    this->_body.w = 50.0f;
+    this->_body.h = 50.0f;
 
     this->_health = 100;
     this->_rightWep = true;
@@ -16,21 +16,21 @@ Player::Player()
 
 Player::~Player()
 {
-
+    
 }
 
 SDL_FRect& Player::getBody()
 {
-	return this->_player;
+	return this->_body;
 }
 
 void Player::updateStrike()
 {
     if (this->existingStrike())
     {
-        moveObj(0.0f, -16.0f, this->_strike);
+        moveObj(0.0f, -15.0f, this->_strike);
 
-        if (this->_strike->getBody().y < 0) {
+        if (this->_strike->getBody().y < -20.0f) {
             this->rmvStrike();
         }
     }
@@ -48,7 +48,7 @@ SDL_FRect& Player::getStrikeBody()
 
 bool Player::existingStrike()
 {
-    if (this->_strike != nullptr)
+    if (this->_strike)
     {
         return true;
     }
@@ -65,19 +65,19 @@ void Player::shoot()
     this->_strike = std::make_shared<Strike>();
     if (this->existingStrike())
     {
-        this->_strike->getBody().w = 5;
-        this->_strike->getBody().h = 40;
+        this->_strike->getBody().w = 40;
+        this->_strike->getBody().h = 60;
         if (this->_rightWep)
         {
-            this->_strike->getBody().x = this->_player.x;
+            this->_strike->getBody().x = this->_body.x - 10.0f;
             this->_rightWep = false;
         }
         else
         {
-            this->_strike->getBody().x = this->_player.x + 40.0f;
+            this->_strike->getBody().x = this->_body.x + 20.0f;
             this->_rightWep = true;
         }
-        this->_strike->getBody().y = this->_player.y;
+        this->_strike->getBody().y = this->_body.y;
     }
 }
 
@@ -101,7 +101,10 @@ int Player::getHealth()
 
 void Player::setTexture(SDL_Texture* _newTexture)
 {
-    this->_PTexture = _newTexture;
+    if (_newTexture)
+    {
+        this->_PTexture = _newTexture;
+    }
 }
 
 SDL_Texture* Player::getTexture()

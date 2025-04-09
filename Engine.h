@@ -15,6 +15,7 @@
 
 #include "Player.h"
 #include "Meteor.h"
+#include "Enemy.h"
 
 class Engine
 {
@@ -37,6 +38,8 @@ private:
 	SDL_Texture* _P2Texture; // Player_second texture for animation
 	SDL_Texture* _MTexture;	// Meteor texture
 	SDL_Texture* _BGTexture; // Backgound texture
+	SDL_Texture* _STexture; // Strike texture
+	SDL_Texture* _ETexture; // Enemy texture
 
 	SDL_Texture* _SmExTexture; // Small explosion texture
 	SDL_Texture* _BigExTexture;	// Big explosion texture
@@ -49,23 +52,27 @@ private:
 	SDL_Rect _healthBody; // UI body for health
 	std::string _strH; // Updates health string
 
-	int _mouseX, _mouseY; // mouse x and y cords
-	Uint32 _startTime; // Start gane timer
-	Uint32 _PAnimTime; // Player animation refresh
-	Uint32 _ExAnimTime;	// Explosion delay between the frames
-
-	Player _player; // Player object
 
 	bool _close;
+	int _mouseX, _mouseY; // mouse x and y cords
+	Uint32 _startTime; // Start game timer
+	Uint32 _PAnimTime; // Player animation refresh
+	Uint32 _ExAnimTime;	// Explosion delay between the frames
+	Uint32 _EnemyTime; // Enemy spawn timer
+	Uint32 _EnemySTime; // Enemy strike interval 
 
 	SDL_Rect _bgBody; // Background rect 
 	std::vector<std::shared_ptr<Meteor>> _meteors; // Stores meteors objects
+	Player _player; // Player object
+	std::shared_ptr<Enemy> _enemy; // Enemy object
+
+	void updatePlayer(); // Updates player object
+	void updateEnemy(); // Updates enemy object
 	void updateMeteor(); // Updates meteor object
 	
-	void eventHandler();
-	void updateMouse();
-	void updatePlayer(); // Updates player object
-	void exit();
+	void eventHandler(); // Handle the updates
+	void updateMouse(); // Updates mouse position
+	void exit(); // Exit the game and release necessary objects	from the memory
 
 	void initVariables();
 	void initWindow();

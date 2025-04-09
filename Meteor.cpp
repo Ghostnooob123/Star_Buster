@@ -7,8 +7,8 @@ Meteor::Meteor() {
 
 	this->_body.x = static_cast<float>(distrX(gen));
 	this->_body.y = -100.0f;
-	this->_body.h = 50.0f;
 	this->_body.w = 70.0f;
+	this->_body.h = 50.0f;
 
 	this->_health = 100;
 
@@ -25,6 +25,11 @@ Meteor::Meteor() {
 	{
 		this->_speed = 0.3f;
 	}
+}
+
+Meteor::~Meteor()
+{
+	
 }
 
 float Meteor::getSpeed()
@@ -46,7 +51,10 @@ int Meteor::getHealth() {
 
 void Meteor::setTexture(SDL_Texture* _newTexture)
 {
-	this->_MTexture = _newTexture;
+	if (_newTexture)
+	{
+		this->_MTexture = _newTexture;
+	}
 }
 
 SDL_Texture* Meteor::getTexture()

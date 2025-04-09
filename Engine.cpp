@@ -29,8 +29,13 @@ void Engine::update()
 
     if (this->_player.playerAlive()) {
         this->updatePlayer();
+        this->updateEnemy();
         this->updateMeteor();
         this->_player.updateStrike();
+        if (this->_enemy)
+        {
+            this->_enemy->updateStrike();
+        }
     }
     else
     {
@@ -50,8 +55,7 @@ void Engine::render()
 
     if (this->_player.existingStrike())
     {
-        SDL_SetRenderDrawColor(this->_renderer, 245, 41, 10, 0);
-        SDL_RenderFillRectF(this->_renderer, &this->_player.renderStrike());
+        SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &this->_player.getStrikeBody());
     }
 
     for (size_t i = 0; i < this->_meteors.size(); i++)
@@ -60,6 +64,15 @@ void Engine::render()
         {
             SDL_RenderCopyF(this->_renderer, this->_meteors[i]->getTexture(), nullptr, &this->_meteors[i]->getBody());
         }
+    }
+
+    if (this->_enemy != nullptr)
+    {
+        SDL_RenderCopyF(this->_renderer, this->_enemy->getTexture(), nullptr, &this->_enemy->getBody());
+    }
+    if (this->_enemy != nullptr && this->_enemy->existingStrike())
+    {
+        SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &this->_enemy->getStrikeBody());
     }
 
     // UI
@@ -85,7 +98,7 @@ void Engine::updateMeteor()
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrY(0, 1);
 
-    if (SDL_GetTicks() - this->_startTime >= 3000 && this->_meteors.size() == 0)
+    if (this->_meteors.size() == 0)
     {
         for (size_t i = 0; i < METEOR_CAP; i++)
         {
@@ -136,13 +149,23 @@ void Engine::updateMeteor()
                 this->_meteors[i] = nullptr;
             }
 
-            if (this->_meteors[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 200 &&
+            if (this->_meteors[i]->getTexture() == this->_MTexture && this->_meteors[i] != nullptr &&
+                checkCollisionF(this->_player.getBody(), this->_meteors[i]->getBody()))
+            {
+                this->_player.takeDamage(10);
+                this->_strH = "HP: " + std::to_string(this->_player.getHealth());
+
+                this->_meteors[i]->setTexture(this->_SmExTexture);
+                this->_ExAnimTime = SDL_GetTicks();
+            }
+
+            if (this->_meteors[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 150 &&
                 this->_meteors[i]->getTexture() == this->_SmExTexture)
             {
                 this->_meteors[i]->setTexture(this->_BigExTexture);
                 this->_ExAnimTime = SDL_GetTicks();
             }
-            if (this->_meteors[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 300 &&
+            if (this->_meteors[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 200 &&
                 this->_meteors[i]->getTexture() == this->_BigExTexture)
             {
                 this->_meteors[i] = nullptr;
@@ -150,7 +173,7 @@ void Engine::updateMeteor()
         }  
     }
 
-    if (SDL_GetTicks() - this->_startTime >= 2000 && this->_meteors.size() != 0)
+    if (SDL_GetTicks() - this->_startTime >= 3000 && this->_meteors.size() != 0)
     {
         for (size_t i = 0; i < METEOR_CAP; i++)
         {
@@ -218,15 +241,6 @@ void Engine::updatePlayer()
     if (this->_player.getBody().y < 0) this->_player.getBody().y = 0;
     if (this->_player.getBody().y + this->_player.getBody().h > SCREEN_HEIGHT + 40.0f) this->_player.getBody().y = 
         (SCREEN_HEIGHT + 40.0f ) - this->_player.getBody().h;
-    for (size_t i = 0; i < this->_meteors.size(); i++)
-    {
-        if (checkCollisionF(this->_player.getBody(), this->_meteors[i]->getBody()))
-        {
-            this->_player.takeDamage(10);
-            this->_meteors[i] = nullptr;
-            this->_strH = "HP: " + std::to_string(this->_player.getHealth());
-        }
-    }
 
     if (SDL_GetTicks() - this->_PAnimTime >= 100)
     {
@@ -236,6 +250,85 @@ void Engine::updatePlayer()
     else
     {
         this->_player.setTexture(this->_PTexture);
+    }
+
+    if (this->_enemy != nullptr && checkCollisionF(this->_enemy->getStrikeBody(), this->_player.getBody()))
+    {
+        this->_player.takeDamage(10);
+        this->_strH = "HP: " + std::to_string(this->_player.getHealth());
+        if (this->_player.getHealth() == 0)
+        {
+            
+        }
+        if (this->_player.getHealth() > 0)
+        {
+            this->_enemy->rmvStrike();
+        }
+    }
+}
+
+void Engine::updateEnemy()
+{
+    if (SDL_GetTicks() - this->_EnemyTime >= 5000)
+    {
+        if (this->_enemy == nullptr)
+        {
+            this->_enemy = std::make_shared<Enemy>();
+            this->_enemy->setTexture(this->_ETexture);
+            this->_EnemyTime = SDL_GetTicks();
+        }
+        else
+        {
+            if (this->_enemy->moveDown())
+            {
+                move(0.0f, 1.5f, this->_enemy->getBody());
+            }
+            if (this->_enemy->moveRight())
+            {
+                move(2.5f, 0.0f, this->_enemy->getBody());
+            }
+            if (this->_enemy->moveLeft())
+            {
+                move(-2.5f, 0.0f, this->_enemy->getBody());
+            }
+        }
+    }
+
+    if (this->_enemy != nullptr)
+    {
+        if (this->_enemy->getBody().y >= 40.0f && SDL_GetTicks() - this->_EnemySTime >= 800) {
+            if (!this->_enemy->existingStrike())
+            {
+                this->_enemy->shoot();
+                _EnemySTime = SDL_GetTicks();
+            }
+        }
+
+        if (checkCollisionF(this->_player.getStrikeBody(), this->_enemy->getBody()))
+        {
+            this->_enemy->takeDamage(20);
+            if (this->_enemy->getHealth() == 0)
+            {
+                this->_enemy->setTexture(this->_SmExTexture);
+                this->_ExAnimTime = SDL_GetTicks();
+            }
+            if (this->_enemy->getHealth() > 0)
+            {
+                this->_player.rmvStrike();
+            }
+        }
+    }
+
+    if (this->_enemy != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 150 &&
+        this->_enemy->getTexture() == this->_SmExTexture)
+    {
+        this->_enemy->setTexture(this->_BigExTexture);
+        this->_ExAnimTime = SDL_GetTicks();
+    }
+    if (this->_enemy != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 200 &&
+        this->_enemy->getTexture() == this->_BigExTexture)
+    {
+        this->_enemy = nullptr;
     }
 }
 
@@ -268,11 +361,15 @@ void Engine::initVariables()
     this->_startTime = SDL_GetTicks();
     this->_PAnimTime = SDL_GetTicks();
     this->_ExAnimTime = SDL_GetTicks();
+    this->_EnemyTime = SDL_GetTicks();
+    this->_EnemySTime = SDL_GetTicks();
 
     this->_bgBody.x = 0;
     this->_bgBody.y = 0;
     this->_bgBody.w = SCREEN_WIDTH;
     this->_bgBody.h = SCREEN_HEIGHT;
+
+    this->_enemy = std::make_shared<Enemy>();
 }
 
 void Engine::initWindow()
@@ -340,6 +437,23 @@ void Engine::initTextures()
         std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
     }
     SDL_FreeSurface(this->_surface);
+
+    // STRIKE TEXTURES
+    this->_surface = IMG_Load("textures/strike.png");
+    this->_STexture = SDL_CreateTextureFromSurface(this->_renderer, this->_surface);
+    if (!this->_STexture) {
+        std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
+    }
+    SDL_FreeSurface(this->_surface);
+
+    // ENEMY TEXTURES
+    this->_surface = IMG_Load("textures/enemy.png");
+    this->_ETexture = SDL_CreateTextureFromSurface(this->_renderer, this->_surface);
+    if (!this->_ETexture) {
+        std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
+    }
+    SDL_FreeSurface(this->_surface);
+    this->_enemy->setTexture(this->_ETexture);
 }
 
 void Engine::initFont_Text()
@@ -360,8 +474,8 @@ void Engine::initFont_Text()
         std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
     }
     SDL_FreeSurface(this->_surfaceText);
-    this->_healthBody.x = 30;
-    this->_healthBody.y = 30;
+    this->_healthBody.x = 20;
+    this->_healthBody.y = 580;
     this->_healthBody.h = 50;
     this->_healthBody.w = 140;
 }
