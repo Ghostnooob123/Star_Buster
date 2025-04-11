@@ -4,7 +4,6 @@
 #include <SDL2/SDL.h>
 #include <memory>
 #include "templateFunc.h"
-#include <iostream>
 
 class Enemy {
 public:

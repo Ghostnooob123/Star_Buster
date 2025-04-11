@@ -62,7 +62,18 @@ void Engine::render()
     {
         if (this->_meteors[i] != nullptr)
         {
-            SDL_RenderCopyF(this->_renderer, this->_meteors[i]->getTexture(), nullptr, &this->_meteors[i]->getBody());
+            SDL_FRect body = this->_meteors[i]->getBody();
+            SDL_FPoint center = { body.w / 2.0f, body.h / 2.0f };
+
+            SDL_RenderCopyExF(
+                this->_renderer,
+                this->_meteors[i]->getTexture(),
+                nullptr,
+                &body,
+                this->_meteors[i]->getAngle(),
+                &center,
+                SDL_FLIP_NONE
+            );
         }
     }
 
@@ -97,6 +108,7 @@ void Engine::updateMeteor()
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrY(0, 1);
+    std::uniform_int_distribution<> distrAngle(0, 1);
 
     if (this->_meteors.size() == 0)
     {
@@ -104,6 +116,8 @@ void Engine::updateMeteor()
         {
             std::shared_ptr<Meteor> meteor = std::make_shared<Meteor>();
             meteor->setTexture(this->_MTexture);
+            if (distrAngle(gen) == 0)  meteor->setRotate(0.03f);
+            else meteor->setRotate(-0.05f);
             this->_meteors.push_back(meteor);
         }
        
@@ -122,6 +136,7 @@ void Engine::updateMeteor()
         if (this->_meteors[i] != nullptr)
         {
             moveObj(0.0f, this->_meteors[i]->getSpeed(), this->_meteors[i]);
+            this->_meteors[i]->rotate();
 
             bool outOfBounds = this->_meteors[i]->getBody().y < -110.0f ||
                 this->_meteors[i]->getBody().y + this->_meteors[i]->getBody().h > SCREEN_HEIGHT + 100 ||
@@ -182,6 +197,9 @@ void Engine::updateMeteor()
             {
                 std::shared_ptr<Meteor> meteor = std::make_shared<Meteor>();
                 meteor->setTexture(this->_MTexture);
+                meteor->setTexture(this->_MTexture);
+                if (distrAngle(gen) == 0)  meteor->setRotate(0.03f);
+                else meteor->setRotate(-0.05f);
                 this->_meteors[i] = meteor;
                 break;
             }
