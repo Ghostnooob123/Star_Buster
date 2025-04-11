@@ -61,3 +61,18 @@ SDL_Texture* Meteor::getTexture()
 {
 	return this->_MTexture;
 }
+
+float Meteor::getAngle() const
+{
+	return this->_angle;
+}
+
+void Meteor::setRotate(float _newDelta)
+{
+	this->_delta = _newDelta;
+}
+
+void Meteor::rotate()
+{
+	this->_angle += this->_delta;
+}
