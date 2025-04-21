@@ -6,7 +6,7 @@ Star Buster is singleplayer game inspired by space shooter games.
 ## How to Use
 The program is safe to run but may occur a warning due the fact the program is not widely known.
 Find Star Buster.exe within \x64-release\ folder or \Star Buster\ folder.
-(Program is only compatible with Windows 10-11)
+(Program is compatible with Windows 10-11 and Linux (Tested on Ubuntu)
 
 ## Dependencies
 
