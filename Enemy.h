@@ -21,7 +21,7 @@ public:
 	void shoot();
 	bool existingStrike();
 	void rmvStrike();
-	void takeDamage(int _dmg);
+	void setHealth(int _dmg);
 	int getHealth();
 
 private:

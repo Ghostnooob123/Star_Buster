@@ -73,7 +73,7 @@ bool Enemy::moveDown()
 	if (this->_body.y <= 40.0f)
 	{
 		return true;
-	} 
+	}
 	return false;
 }
 
@@ -117,7 +117,7 @@ bool Enemy::existingStrike()
 	if (this->_strike)
 	{
 		return true;
-	} 
+	}
 	return false;
 }
 
@@ -126,7 +126,7 @@ void Enemy::rmvStrike()
 	this->_strike = nullptr;
 }
 
-void Enemy::takeDamage(int _dmg)
+void Enemy::setHealth(int _dmg)
 {
 	this->health -= _dmg;
 }

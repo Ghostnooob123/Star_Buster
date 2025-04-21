@@ -10,7 +10,7 @@ public:
 	~Meteor();
 	float getSpeed();
 	SDL_FRect& getBody();
-	void takeDamage(int dmg);
+	void setHealth(int dmg);
 	int getHealth();
 	void setTexture(SDL_Texture* t);
 	SDL_Texture* getTexture();

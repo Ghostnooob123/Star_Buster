@@ -4,9 +4,10 @@ Meteor::Meteor() {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> distrX(100, 850);
+	std::uniform_int_distribution<> distrY(-100, -95);
 
 	this->_body.x = static_cast<float>(distrX(gen));
-	this->_body.y = -100.0f;
+	this->_body.y = static_cast<float>(distrY(gen));
 	this->_body.w = 70.0f;
 	this->_body.h = 50.0f;
 
@@ -16,20 +17,13 @@ Meteor::Meteor() {
 
 	this->_MTexture = nullptr;
 
-	std::uniform_int_distribution<> distrY(0, 1);
-	if (distrY(gen) == 0)
-	{
-		this->_speed = 0.2f;
-	}
-	if (distrY(gen) == 1)
-	{
-		this->_speed = 0.3f;
-	}
+	std::uniform_real_distribution<> distrSpeed(0.2f, 0.3f);
+	this->_speed = static_cast<float>(distrSpeed(gen));
 }
 
 Meteor::~Meteor()
 {
-	
+
 }
 
 float Meteor::getSpeed()
@@ -41,7 +35,7 @@ SDL_FRect& Meteor::getBody() {
 	return this->_body;
 }
 
-void Meteor::takeDamage(int dmg) {
+void Meteor::setHealth(int dmg) {
 	this->_health -= dmg;
 }
 
