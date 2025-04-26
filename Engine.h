@@ -47,6 +47,10 @@ private:
 	TTF_Font* _fontUI; // TTF for global font UI
 	SDL_Surface* _surfaceText; // Surface only for UI
 
+	// UI 
+	SDL_Texture* _restartTexture; // Restart button texture
+	SDL_FRect _restartBody; // Restart button body
+
 	// Health UI
 	SDL_Texture* _healthTexture; // UI texture for health
 	SDL_Rect _healthBody; // UI body for health
@@ -64,15 +68,19 @@ private:
 
 	SDL_Rect _bgBody; // Background rect 
 	std::vector<std::shared_ptr<Meteor>> _meteors; // Stores meteors objects
-	Player _player; // Player object
-	std::shared_ptr<Enemy> _enemy; // Enemy object
+	std::unique_ptr<Player> _player; // Player object
+	std::vector<std::shared_ptr<Enemy>> _enemies; // Stores enemy objects
+	size_t _enemyCount; // Enemy count
+	bool _newEnemy; // New enemy object
 
 	void updatePlayer(); // Updates player object
 	void updateEnemy(); // Updates enemy object
+	bool allEnemiesDestroyed() const; // Check if all enemies are destroyed
 	void updateMeteor(); // Updates meteor object
-	
+
 	void eventHandler(); // Handle the updates
 	void updateMouse(); // Updates mouse position
+	void restart(); // Restart the game
 	void exit(); // Exit the game and release necessary objects	from the memory
 
 	void initVariables();

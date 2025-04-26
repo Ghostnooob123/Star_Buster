@@ -8,7 +8,7 @@ const int frameDelay = 1000 / FPS;
 
 int main(int argc, char* argv[]) {
 
-    Engine en = Engine();
+	Engine en = Engine();
 
 	while (en.running())
 	{
@@ -23,5 +23,5 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-    return 0;
+	return 0;
 }

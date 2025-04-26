@@ -1,0 +1,3 @@
+D:/c-programs/Star_Buster/out/build/x64-release/CMakeFiles/C.dir
+D:/c-programs/Star_Buster/out/build/x64-release/CMakeFiles/edit_cache.dir
+D:/c-programs/Star_Buster/out/build/x64-release/CMakeFiles/rebuild_cache.dir

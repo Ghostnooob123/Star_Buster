@@ -21,7 +21,7 @@ public:
 	void rmvStrike();
 	void updateStrike();
 	void shoot();
-	void takeDamage(int dmg);
+	void setHealth(int dmg);
 	bool playerAlive();
 	int getHealth();
 	void setTexture(SDL_Texture* _newTexture);
