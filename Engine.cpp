@@ -67,13 +67,16 @@ void Engine::render()
 		}
 	}
 
-	if (this->_enemy != nullptr)
+	for (size_t i = 0; i < this->_enemies.size(); i++)
 	{
-		SDL_RenderCopyF(this->_renderer, this->_enemy->getTexture(), nullptr, &this->_enemy->getBody());
-	}
-	if (this->_enemy != nullptr && this->_enemy->existingStrike())
-	{
-		SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &this->_enemy->getStrikeBody());
+		if (this->_enemies[i] != nullptr)
+		{
+			SDL_RenderCopyF(this->_renderer, this->_enemies[i]->getTexture(), nullptr, &this->_enemies[i]->getBody());
+		}
+		if (this->_enemies[i] != nullptr && this->_enemies[i]->existingStrike())
+		{
+			SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &this->_enemies[i]->getStrikeBody());
+		}
 	}
 
 	// UI
@@ -103,7 +106,7 @@ void Engine::updateMeteor()
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<> distrAngle(-0.05, 0.03);
 
-	if (this->_meteors.size() == 0)
+	if (SDL_GetTicks() - this->_startTime >= 2000 && this->_meteors.size() == 0)
 	{
 		for (size_t i = 0; i < METEOR_CAP; i++)
 		{
@@ -112,7 +115,6 @@ void Engine::updateMeteor()
 			meteor->setRotate(static_cast<float>(distrAngle(gen)));
 			this->_meteors.push_back(meteor);
 		}
-
 
 		for (size_t i = 0; i < this->_meteors.size() - 1; i++) {
 			if (checkCollisionF(this->_meteors[i]->getBody(), this->_meteors[i + 1]->getBody())) {
@@ -184,7 +186,6 @@ void Engine::updateMeteor()
 	{
 		for (size_t i = 0; i < METEOR_CAP; i++)
 		{
-
 			if (this->_meteors[i] == nullptr)
 			{
 				std::shared_ptr<Meteor> meteor = std::make_shared<Meteor>();
@@ -196,7 +197,6 @@ void Engine::updateMeteor()
 				break;
 			}
 		}
-
 		this->_startTime = SDL_GetTicks();
 	}
 }
@@ -244,7 +244,7 @@ void Engine::restart()
 	this->_player->getBody().x = SCREEN_WIDTH / 2;
 	this->_player->getBody().y = SCREEN_HEIGHT - 100;
 	this->_meteors.clear();
-	this->_enemy = nullptr;
+	this->_enemies.clear();
 }
 
 void Engine::updatePlayer()
@@ -274,86 +274,128 @@ void Engine::updatePlayer()
 		this->_player->setTexture(this->_PTexture);
 	}
 
-	if (this->_enemy != nullptr && checkCollisionF(this->_enemy->getStrikeBody(), this->_player->getBody()))
+	for (size_t i = 0; i < this->_enemies.size(); i++)
 	{
-		this->_player->setHealth(10);
-		this->_strH = "HP: " + std::to_string(this->_player->getHealth());
-		if (this->_player->getHealth() == 0)
+		if (this->_enemies[i] != nullptr && checkCollisionF(this->_enemies[i]->getStrikeBody(),
+			this->_player->getBody()))
 		{
+			this->_player->setHealth(10);
+			this->_strH = "HP: " + std::to_string(this->_player->getHealth());
+			if (this->_player->getHealth() == 0)
+			{
 
-		}
-		if (this->_player->getHealth() > 0)
-		{
-			this->_enemy->rmvStrike();
+			}
+			if (this->_player->getHealth() > 0)
+			{
+				this->_enemies[i]->rmvStrike();
+			}
 		}
 	}
 }
 
 void Engine::updateEnemy()
 {
-	if (SDL_GetTicks() - this->_EnemyTime >= 5000)
-	{
-		if (this->_enemy == nullptr)
-		{
-			this->_enemy = std::make_unique<Enemy>();
-			this->_enemy->setTexture(this->_ETexture);
+	if (this->_enemies.size() > ENEMY_CAP) {
+		if (allEnemiesDestroyed()) {
+			this->_enemies.clear();
 			this->_EnemyTime = SDL_GetTicks();
 		}
-		else
-		{
-			if (this->_enemy->moveDown())
-			{
-				move(0.0f, 1.5f, this->_enemy->getBody());
-			}
-			if (this->_enemy->moveRight())
-			{
-				move(2.5f, 0.0f, this->_enemy->getBody());
-			}
-			if (this->_enemy->moveLeft())
-			{
-				move(-2.5f, 0.0f, this->_enemy->getBody());
-			}
-		}
 	}
-
-	if (this->_enemy != nullptr)
+	if (SDL_GetTicks() - this->_EnemyTime >= 5000 && this->_enemies.empty())
 	{
-		if (this->_enemy->getBody().y >= 40.0f && SDL_GetTicks() - this->_EnemySTime >= 800) {
-			if (!this->_enemy->existingStrike())
-			{
-				this->_enemy->shoot();
-				_EnemySTime = SDL_GetTicks();
-			}
-		}
+		std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>();
+		enemy->setTexture(this->_ETexture);
+		this->_enemies.push_back(enemy);
 
-		if (checkCollisionF(this->_player->getStrikeBody(), this->_enemy->getBody()))
-		{
-			this->_enemy->setHealth(20);
-			if (this->_enemy->getHealth() == 0)
+		this->_EnemyTime = SDL_GetTicks();
+	}
+	for (size_t i = 0; i < this->_enemies.size(); i++)
+	{
+		if (this->_enemies[i] != nullptr) {
+			if (this->_enemies[i]->moveDown())
 			{
-				this->_enemy->setTexture(this->_SmExTexture);
+				move(0.0f, 1.5f, this->_enemies[i]->getBody());
+			}
+			if (this->_enemies[i]->moveRight())
+			{
+				move(2.0f, 0.0f, this->_enemies[i]->getBody());
+			}
+			if (this->_enemies[i]->moveLeft())
+			{
+				move(-2.0f, 0.0f, this->_enemies[i]->getBody());
+			}
+
+			this->_enemies[i]->updateStrike();
+			if (this->_enemies[i]->getBody().y >= 40.0f && SDL_GetTicks() - this->_EnemySTime >= 800) {
+				if (!this->_enemies[i]->existingStrike())
+				{
+					this->_enemies[i]->shoot();
+					this->_EnemySTime = SDL_GetTicks();
+				}
+			}
+			if (checkCollisionF(this->_player->getStrikeBody(), this->_enemies[i]->getBody()))
+			{
+				this->_enemies[i]->setHealth(20);
+				if (this->_enemies[i]->getHealth() == 0)
+				{
+					this->_enemies[i]->setTexture(this->_SmExTexture);
+					this->_ExAnimTime = SDL_GetTicks();
+				}
+				if (this->_enemies[i]->getHealth() > 0)
+				{
+					this->_player->rmvStrike();
+				}
+			}
+			if (this->_enemies[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 150 &&
+				this->_enemies[i]->getTexture() == this->_SmExTexture)
+			{
+				this->_enemies[i]->setTexture(this->_BigExTexture);
 				this->_ExAnimTime = SDL_GetTicks();
+				this->_EnemyTime = SDL_GetTicks();
 			}
-			if (this->_enemy->getHealth() > 0)
+			if (this->_enemies[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 200 &&
+				this->_enemies[i]->getTexture() == this->_BigExTexture)
 			{
-				this->_player->rmvStrike();
+				this->_enemies[i] = nullptr;
+			}
+			if (allEnemiesDestroyed())
+			{
+				std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>();
+				enemy->setTexture(this->_ETexture);
+				enemy = nullptr;
+				this->_enemies.push_back(enemy);
 			}
 		}
-
-		this->_enemy->updateStrike();
 	}
 
-	if (this->_enemy != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 150 &&
-		this->_enemy->getTexture() == this->_SmExTexture)
+	if (SDL_GetTicks() - this->_EnemyTime >= 5000)
 	{
-		this->_enemy->setTexture(this->_BigExTexture);
-		this->_ExAnimTime = SDL_GetTicks();
+		if (this->_enemies.size() <= ENEMY_CAP)
+		{
+			if (allEnemiesDestroyed()) {
+				for (size_t i = 0; i < this->_enemies.size(); i++)
+				{
+					if (this->_enemies[i] == nullptr)
+					{
+						std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>();
+						enemy->setTexture(this->_ETexture);
+						this->_enemies[i] = enemy;
+					}
+				}
+			}
+		}
+		this->_EnemyTime = SDL_GetTicks();
 	}
-	if (this->_enemy != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 200 &&
-		this->_enemy->getTexture() == this->_BigExTexture)
+}
+
+bool Engine::allEnemiesDestroyed() const
+{
+	for (const auto& enemy : this->_enemies)
 	{
-		this->_enemy = nullptr;
+		if (enemy != nullptr)
+			return false;
 	}
+	return true;
 }
 
 void Engine::exit()
@@ -383,8 +425,10 @@ void Engine::initVariables()
 	this->_close = false;
 
 	this->_player = std::make_unique<Player>();
+	this->_enemyCount = 1;
 
-	this->_enemy = std::make_unique<Enemy>();
+	this->_meteors.reserve(METEOR_CAP);
+	this->_enemies.reserve(ENEMY_CAP);
 
 	this->_restartBody.x = SCREEN_WIDTH / 2.0f - 50.0f;
 	this->_restartBody.y = SCREEN_HEIGHT / 2.0f;
@@ -485,7 +529,6 @@ void Engine::initTextures()
 		std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
 	}
 	SDL_FreeSurface(this->_surface);
-	this->_enemy->setTexture(this->_ETexture);
 
 	// UI TEXTURES
 	this->_surface = IMG_Load("textures/restart.png");

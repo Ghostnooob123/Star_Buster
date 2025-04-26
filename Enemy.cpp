@@ -15,6 +15,11 @@ Enemy::Enemy()
 
 	this->_isStrike = false;
 	this->health = 100;
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> distrWay(100, 750);
+	this->_body.x = distrWay(gen);
 }
 
 Enemy::~Enemy()
@@ -42,9 +47,13 @@ SDL_Texture* Enemy::getTexture()
 
 bool Enemy::moveLeft()
 {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> distrWay(100, 200);
+
 	if (!this->_moveR)
 	{
-		if (this->_body.x <= 150.0f)
+		if (this->_body.x <= distrWay(gen))
 		{
 			this->_moveR = true;
 			return false;
@@ -56,9 +65,13 @@ bool Enemy::moveLeft()
 
 bool Enemy::moveRight()
 {
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> distrWay(600, 750);
+
 	if (this->_moveR)
 	{
-		if (this->_body.x >= 750.0f)
+		if (this->_body.x >= distrWay(gen))
 		{
 			this->_moveR = false;
 			return false;
@@ -70,7 +83,11 @@ bool Enemy::moveRight()
 
 bool Enemy::moveDown()
 {
-	if (this->_body.y <= 40.0f)
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<> distrWay(40, 200);
+
+	if (this->_body.y <= distrWay(gen))
 	{
 		return true;
 	}
@@ -81,7 +98,7 @@ void Enemy::updateStrike()
 {
 	if (this->existingStrike())
 	{
-		moveObj(0.0f, 12.0f, this->_strike);
+		moveObj(0.0f, 11.0f, this->_strike);
 
 		if (this->_strike->getBody().y > 920.0f) {
 			this->rmvStrike();

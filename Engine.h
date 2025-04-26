@@ -69,10 +69,13 @@ private:
 	SDL_Rect _bgBody; // Background rect 
 	std::vector<std::shared_ptr<Meteor>> _meteors; // Stores meteors objects
 	std::unique_ptr<Player> _player; // Player object
-	std::unique_ptr<Enemy> _enemy; // Enemy object
+	std::vector<std::shared_ptr<Enemy>> _enemies; // Stores enemy objects
+	size_t _enemyCount; // Enemy count
+	bool _newEnemy; // New enemy object
 
 	void updatePlayer(); // Updates player object
 	void updateEnemy(); // Updates enemy object
+	bool allEnemiesDestroyed() const; // Check if all enemies are destroyed
 	void updateMeteor(); // Updates meteor object
 
 	void eventHandler(); // Handle the updates
