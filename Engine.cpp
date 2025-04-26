@@ -301,7 +301,7 @@ void Engine::updateEnemy()
 			this->_EnemyTime = SDL_GetTicks();
 		}
 	}
-	if (SDL_GetTicks() - this->_EnemyTime >= 5000 && this->_enemies.empty())
+	if (SDL_GetTicks() - this->_EnemyTime >= 10000 && this->_enemies.empty())
 	{
 		std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>();
 		enemy->setTexture(this->_ETexture);
@@ -368,7 +368,7 @@ void Engine::updateEnemy()
 		}
 	}
 
-	if (SDL_GetTicks() - this->_EnemyTime >= 5000)
+	if (SDL_GetTicks() - this->_EnemyTime >= 10000)
 	{
 		if (this->_enemies.size() <= ENEMY_CAP)
 		{
