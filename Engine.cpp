@@ -61,9 +61,15 @@ void Engine::render()
 		{
 			SDL_FRect body = this->_meteors[i]->getBody();
 			SDL_FPoint center = { body.w / 2.0f, body.h / 2.0f };
-
-			SDL_RenderCopyExF(this->_renderer, this->_meteors[i]->getTexture(), nullptr, &body,
-				this->_meteors[i]->getAngle(), &center, SDL_FLIP_NONE);
+			if (this->_meteors[i]->getTexture() != this->_MTexture) {
+				SDL_RenderCopyExF(this->_renderer, this->_meteors[i]->getTexture(), nullptr, &body,
+					0.0f, &center, SDL_FLIP_NONE);
+			}
+			else
+			{
+				SDL_RenderCopyExF(this->_renderer, this->_meteors[i]->getTexture(), nullptr, &body,
+					this->_meteors[i]->getAngle(), &center, SDL_FLIP_NONE);
+			}
 		}
 	}
 
@@ -73,7 +79,8 @@ void Engine::render()
 		{
 			SDL_RenderCopyF(this->_renderer, this->_enemies[i]->getTexture(), nullptr, &this->_enemies[i]->getBody());
 		}
-		if (this->_enemies[i] != nullptr && this->_enemies[i]->existingStrike())
+		if (this->_enemies[i] != nullptr && this->_enemies[i]->existingStrike() &&
+			this->_enemies[i]->getTexture() == this->_ETexture)
 		{
 			SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &this->_enemies[i]->getStrikeBody());
 		}
@@ -191,8 +198,7 @@ void Engine::updateMeteor()
 				std::shared_ptr<Meteor> meteor = std::make_shared<Meteor>();
 				meteor->setTexture(this->_MTexture);
 				meteor->setTexture(this->_MTexture);
-				if (distrAngle(gen) == 0)  meteor->setRotate(0.03f);
-				else meteor->setRotate(-0.05f);
+				meteor->setRotate(static_cast<float>(distrAngle(gen)));
 				this->_meteors[i] = meteor;
 				break;
 			}
@@ -312,20 +318,22 @@ void Engine::updateEnemy()
 	for (size_t i = 0; i < this->_enemies.size(); i++)
 	{
 		if (this->_enemies[i] != nullptr) {
-			if (this->_enemies[i]->moveDown())
+			if (this->_enemies[i]->moveDown() && this->_enemies[i]->getTexture() == this->_ETexture)
 			{
 				move(0.0f, 1.5f, this->_enemies[i]->getBody());
 			}
-			if (this->_enemies[i]->moveRight())
+			if (this->_enemies[i]->moveRight() && this->_enemies[i]->getTexture() == this->_ETexture)
 			{
 				move(2.0f, 0.0f, this->_enemies[i]->getBody());
 			}
-			if (this->_enemies[i]->moveLeft())
+			if (this->_enemies[i]->moveLeft() && this->_enemies[i]->getTexture() == this->_ETexture)
 			{
 				move(-2.0f, 0.0f, this->_enemies[i]->getBody());
 			}
 
-			this->_enemies[i]->updateStrike();
+			if (this->_enemies[i]->getTexture() == this->_ETexture) {
+				this->_enemies[i]->updateStrike();
+			}
 			if (this->_enemies[i]->getBody().y >= 40.0f && SDL_GetTicks() - this->_EnemySTime >= 800) {
 				if (!this->_enemies[i]->existingStrike())
 				{
