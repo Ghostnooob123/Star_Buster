@@ -4,9 +4,18 @@
 #include <SDL2/SDL.h>
 
 #include <memory>
+#include <vector>
 
+#include "Strike.h"
 #include "Consts.h"
 #include "templateFunc.h"
+
+enum class StrikeType {
+	SingleStrike,
+	DoubleStrike,
+	TripleStrike,
+	None
+};
 
 class Player
 {
@@ -15,31 +24,25 @@ public:
 	~Player();
 
 	SDL_FRect& getBody();
-	const SDL_FRect& renderStrike();
-	SDL_FRect& getStrikeBody();
+	std::vector<std::shared_ptr<Strike>> getStrikes();
 	bool existingStrike();
-	void rmvStrike();
+	void rmvStrike(std::shared_ptr<Strike> strike);
 	void updateStrike();
 	void shoot();
 	void setHealth(int dmg);
+	void heal(int heal);
 	bool playerAlive();
 	int getHealth();
 	void setTexture(SDL_Texture* _newTexture);
 	SDL_Texture* getTexture();
+	void setDoubleStrike();
 private:
-	class Strike {
-	public:
-		SDL_FRect& getBody() {
-			return _body;
-		}
-	private:
-		SDL_FRect _body;
-	};
 	SDL_FRect _body;
 
-	std::shared_ptr<Strike> _strike;
+	std::vector<std::shared_ptr<Strike>> _strikes;
 	SDL_Texture* _PTexture;
 	int _health;
+	StrikeType _strikeType;
 	bool _rightWep;
 };
 #endif // !PLAYER_H

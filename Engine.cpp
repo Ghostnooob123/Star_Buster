@@ -31,6 +31,7 @@ void Engine::update()
 		this->updatePlayer();
 		this->updateEnemy();
 		this->updateMeteor();
+		this->updatePickups();
 		this->_player->updateStrike();
 	}
 	else
@@ -50,9 +51,10 @@ void Engine::render()
 
 	SDL_RenderCopyF(this->_renderer, this->_player->getTexture(), nullptr, &this->_player->getBody());
 
-	if (this->_player->existingStrike())
-	{
-		SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &this->_player->getStrikeBody());
+	for (const auto& strike : this->_player->getStrikes()) {
+		if (strike) {
+			SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &strike->getBody());
+		}
 	}
 
 	for (size_t i = 0; i < this->_meteors.size(); i++)
@@ -83,6 +85,13 @@ void Engine::render()
 			this->_enemies[i]->getTexture() == this->_ETexture)
 		{
 			SDL_RenderCopyF(this->_renderer, this->_STexture, nullptr, &this->_enemies[i]->getStrikeBody());
+		}
+	}
+	for (size_t i = 0; i < this->_pickups.size(); i++)
+	{
+		if (this->_pickups[i]->isSpawn()) {
+			SDL_SetRenderDrawColor(this->_renderer, 66, 135, 245, 255);
+			SDL_RenderFillRectF(this->_renderer, &this->_pickups[i]->getBody());
 		}
 	}
 
@@ -144,23 +153,20 @@ void Engine::updateMeteor()
 				this->_meteors[i]->getBody().x < 0 ||
 				this->_meteors[i]->getBody().x + this->_meteors[i]->getBody().w > SCREEN_WIDTH;
 
-			bool hit = this->_player->existingStrike() &&
-				checkCollisionF(this->_player->getStrikeBody(), this->_meteors[i]->getBody());
-
-			if (hit)
-			{
-				this->_meteors[i]->setHealth(50);
-				if (this->_meteors[i]->getHealth() == 0) {
-
-					this->_meteors[i]->setTexture(this->_SmExTexture);
-					this->_ExAnimTime = SDL_GetTicks();
-				}
-				if (this->_meteors[i]->getHealth() > 0)
+			for (auto& strike : this->_player->getStrikes()) {
+				if (strike && checkCollisionF(strike->getBody(), this->_meteors[i]->getBody()))
 				{
-					this->_player->rmvStrike();
+					this->_meteors[i]->setHealth(50);
+					if (this->_meteors[i]->getHealth() == 0) {
+
+						this->_meteors[i]->setTexture(this->_SmExTexture);
+						this->_ExAnimTime = SDL_GetTicks();
+
+					}
+					this->_player->rmvStrike(strike);
 				}
 			}
-			else if (outOfBounds)
+			if (outOfBounds)
 			{
 				this->_meteors[i] = nullptr;
 			}
@@ -204,6 +210,42 @@ void Engine::updateMeteor()
 			}
 		}
 		this->_startTime = SDL_GetTicks();
+	}
+}
+
+void Engine::updatePickups()
+{
+	bool pickUpExist = false;
+	for (size_t i = 0; i < this->_pickups.size(); i++)
+	{
+		if (this->_pickups[i]->isSpawn()) {
+			pickUpExist = true;
+			break;
+		}
+	}
+	if (SDL_GetTicks() - this->_pickupTime >= 10000 && !pickUpExist) {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<> distrType(0, PickupsType::None);
+
+		for (size_t i = 0; i < this->_pickups.size(); i++)
+		{
+			if (i == distrType(gen)) {
+				this->_pickups[i]->setSpawn(true);
+				break;
+			}
+		}
+	}
+	for (size_t i = 0; i < this->_pickups.size(); i++)
+	{
+		if (this->_pickups[i]->isSpawn()) {
+			move(0.0f, 1.5f, this->_pickups[i]->getBody());
+		}
+		if (this->_pickups[i]->getBody().y + this->_pickups[i]->getBody().h > SCREEN_HEIGHT + 40.0f)
+		{
+			this->_pickups[i]->setSpawn(false);
+			this->_pickups[i]->reset();
+		}
 	}
 }
 
@@ -282,7 +324,8 @@ void Engine::updatePlayer()
 
 	for (size_t i = 0; i < this->_enemies.size(); i++)
 	{
-		if (this->_enemies[i] != nullptr && checkCollisionF(this->_enemies[i]->getStrikeBody(),
+		if (this->_enemies[i] != nullptr && checkCollisionF(
+			this->_enemies[i]->getStrikeBody(),
 			this->_player->getBody()))
 		{
 			this->_player->setHealth(10);
@@ -295,6 +338,33 @@ void Engine::updatePlayer()
 			{
 				this->_enemies[i]->rmvStrike();
 			}
+		}
+	}
+	for (size_t i = 0; i < this->_pickups.size(); i++)
+	{
+		if (checkCollisionF(this->_pickups[i]->getBody(), this->_player->getBody()))
+		{
+			switch (this->_pickups[i]->getType())
+			{
+			case PickupsType::Health:
+				this->_player->heal(20);
+				break;
+
+			case PickupsType::Shield:
+				//this->_player->setShield(true);
+				break;
+
+			case PickupsType::DoubleStrike:
+				this->_player->setDoubleStrike();
+				break;
+
+			case PickupsType::TripleStrike:
+				//this->_player->setTripleStrike(true);
+				break;
+			}
+			this->_pickups[i]->setSpawn(false);
+			this->_pickups[i]->reset();
+			this->_pickupTime = SDL_GetTicks();
 		}
 	}
 }
@@ -341,19 +411,18 @@ void Engine::updateEnemy()
 					this->_EnemySTime = SDL_GetTicks();
 				}
 			}
-			if (checkCollisionF(this->_player->getStrikeBody(), this->_enemies[i]->getBody()))
-			{
-				this->_enemies[i]->setHealth(20);
-				if (this->_enemies[i]->getHealth() == 0)
-				{
-					this->_enemies[i]->setTexture(this->_SmExTexture);
-					this->_ExAnimTime = SDL_GetTicks();
-				}
-				if (this->_enemies[i]->getHealth() > 0)
-				{
-					this->_player->rmvStrike();
+			for (auto& strike : this->_player->getStrikes()) {
+				if (strike && checkCollisionF(strike->getBody(), this->_enemies[i]->getBody())) {
+					this->_enemies[i]->setHealth(20);
+					if (this->_enemies[i]->getHealth() == 0)
+					{
+						this->_enemies[i]->setTexture(this->_SmExTexture);
+						this->_ExAnimTime = SDL_GetTicks();
+					}
+					this->_player->rmvStrike(strike);
 				}
 			}
+
 			if (this->_enemies[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 150 &&
 				this->_enemies[i]->getTexture() == this->_SmExTexture)
 			{
@@ -427,13 +496,17 @@ void Engine::exit()
 
 void Engine::initVariables()
 {
-
 	TTF_Init();
 
 	this->_close = false;
 
 	this->_player = std::make_unique<Player>();
-	this->_enemyCount = 1;
+	for (size_t i = 0; i < PickupsType::None; i++)
+	{
+		std::shared_ptr<Pickups> pickup = std::make_shared<Pickups>();
+		pickup->setType(static_cast<PickupsType>(i));
+		this->_pickups.push_back(pickup);
+	}
 
 	this->_meteors.reserve(METEOR_CAP);
 	this->_enemies.reserve(ENEMY_CAP);
@@ -449,6 +522,7 @@ void Engine::initVariables()
 	this->_EnemyTime = SDL_GetTicks();
 	this->_EnemySTime = SDL_GetTicks();
 	this->_PlayerSTime = SDL_GetTicks();
+	this->_pickupTime = SDL_GetTicks();
 
 	this->_bgBody.x = 0;
 	this->_bgBody.y = 0;

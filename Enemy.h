@@ -2,8 +2,11 @@
 #define ENEMY_H
 
 #include <SDL2/SDL.h>
+
 #include <memory>
 #include <random>
+
+#include "Strike.h"
 #include "templateFunc.h"
 
 class Enemy {
@@ -26,14 +29,6 @@ public:
 	int getHealth();
 
 private:
-	class Strike {
-	public:
-		SDL_FRect& getBody() {
-			return this->_body;
-		}
-	private:
-		SDL_FRect _body;
-	};
 	std::shared_ptr<Strike> _strike;
 	SDL_FRect _body;
 	SDL_Texture* _ETexture;
