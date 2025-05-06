@@ -29,15 +29,12 @@ void Engine::update()
 
 	if (this->_player->playerAlive()) {
 		this->updatePlayer();
-		this->updateEnemy();
-		this->updateMeteor();
-		this->updatePickups();
+		this->updateBgObjects();
 		this->_player->updateStrike();
 	}
 	else
 	{
-		this->updateEnemy();
-		this->updateMeteor();
+		this->updateBgObjects();
 	}
 }
 
@@ -168,15 +165,22 @@ void Engine::updateMeteor()
 			if (this->_meteors[i] != nullptr && this->_meteors[i]->getTexture() == this->_MTexture &&
 				checkCollisionF(this->_player->getBody(), this->_meteors[i]->getBody()))
 			{
-				this->_player->setHealth(10);
-				this->_strH = "HP: " + std::to_string(this->_player->getHealth());
+				if (this->_player->isShieldOn()) {
+					this->_player->useShield(10);
+				}
+				else
+				{
+					this->_player->setHealth(10);
+					this->_strH = "HP: " + std::to_string(this->_player->getHealth());
+
+					this->_PCollTime = SDL_GetTicks();
+					this->_player->setTexture(this->_PCollTexture);
+				}
 
 				this->_meteors[i]->setTexture(this->_SmExTexture);
 				this->_ExAnimTime = SDL_GetTicks();
-				this->_PCollTime = SDL_GetTicks();
-				this->_player->setTexture(this->_PCollTexture);
 			}
-			if (SDL_GetTicks() - this->_PCollTime >= 150) {
+			if (SDL_GetTicks() - this->_PCollTime >= 150 && !this->_player->isShieldOn()) {
 				this->_player->setTexture(this->_PTexture);
 			}
 			if (this->_meteors[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 150 &&
@@ -227,7 +231,7 @@ void Engine::updatePickups()
 
 		for (size_t i = 0; i < this->_pickups.size(); i++)
 		{
-			if (i == distrType(gen)) {
+			if (i == 1) {
 				this->_pickups[i]->setSpawn(true);
 				switch (this->_pickups[i]->getType())
 				{
@@ -256,6 +260,13 @@ void Engine::updatePickups()
 			this->_pickups[i]->reset();
 		}
 	}
+}
+
+void Engine::updateBgObjects()
+{
+	this->updateEnemy();
+	this->updateMeteor();
+	this->updatePickups();
 }
 
 void Engine::eventHandler()
@@ -337,7 +348,19 @@ void Engine::updatePlayer()
 	if (this->_player->getBody().y + this->_player->getBody().h > SCREEN_HEIGHT + 40.0f) this->_player->getBody().y =
 		(SCREEN_HEIGHT + 40.0f) - this->_player->getBody().h;
 
-	if (this->_player->getTexture() != this->_PCollTexture)
+	if (this->_player->isShieldOn()) {
+		if (SDL_GetTicks() - this->_PAnimTime >= 100)
+		{
+			this->_player->setTexture(this->_P2ShieldTexture);
+			this->_PAnimTime = SDL_GetTicks();
+		}
+		else
+		{
+			this->_player->setTexture(this->_PShieldTexture);
+		}
+	}
+
+	if (this->_player->getTexture() != this->_PCollTexture && !this->_player->isShieldOn())
 	{
 		if (SDL_GetTicks() - this->_PAnimTime >= 100)
 		{
@@ -356,18 +379,24 @@ void Engine::updatePlayer()
 			this->_enemies[i]->getStrikeBody(),
 			this->_player->getBody()))
 		{
-			this->_player->setHealth(10);
-			this->_strH = "HP: " + std::to_string(this->_player->getHealth());
+			if (this->_player->isShieldOn()) {
+				this->_player->useShield(10);
+			}
+			else
+			{
+				this->_player->setHealth(10);
+				this->_strH = "HP: " + std::to_string(this->_player->getHealth());
 
-			this->_PCollTime = SDL_GetTicks();
-			this->_player->setTexture(this->_PCollTexture);
+				this->_PCollTime = SDL_GetTicks();
+				this->_player->setTexture(this->_PCollTexture);
+			}
 			if (this->_player->getHealth() > 0)
 			{
 				this->_enemies[i]->rmvStrike();
 			}
 		}
 
-		if (SDL_GetTicks() - this->_PCollTime >= 150) {
+		if (SDL_GetTicks() - this->_PCollTime >= 150 && !this->_player->isShieldOn()) {
 			this->_player->setTexture(this->_PTexture);
 		}
 	}
@@ -382,7 +411,7 @@ void Engine::updatePlayer()
 				break;
 
 			case PickupsType::Shield:
-				//this->_player->setShield(true);
+				this->_player->turnOnShield();
 				break;
 
 			case PickupsType::DoubleStrike:
@@ -547,6 +576,7 @@ void Engine::initVariables()
 	this->_EnemySTime = SDL_GetTicks();
 	this->_PlayerSTime = SDL_GetTicks();
 	this->_pickupTime = SDL_GetTicks();
+	this->_PCollTime = 0;
 
 	this->_bgBody.x = 0;
 	this->_bgBody.y = 0;
@@ -593,6 +623,18 @@ void Engine::initTextures()
 	this->_surface = IMG_Load("textures/shipCol.png");
 	this->_PCollTexture = SDL_CreateTextureFromSurface(this->_renderer, this->_surface);
 	if (!this->_PCollTexture) {
+		std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
+	}
+	SDL_FreeSurface(this->_surface);
+	this->_surface = IMG_Load("textures/shipShieldOn.png");
+	this->_PShieldTexture = SDL_CreateTextureFromSurface(this->_renderer, this->_surface);
+	if (!this->_PShieldTexture) {
+		std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
+	}
+	SDL_FreeSurface(this->_surface);
+	this->_surface = IMG_Load("textures/shipShieldOnAn2.png");
+	this->_P2ShieldTexture = SDL_CreateTextureFromSurface(this->_renderer, this->_surface);
+	if (!this->_P2ShieldTexture) {
 		std::cerr << "Failed to create texture: " << SDL_GetError() << '\n';
 	}
 	SDL_FreeSurface(this->_surface);

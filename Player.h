@@ -33,6 +33,9 @@ public:
 	void heal(int heal);
 	bool playerAlive();
 	int getHealth();
+	void turnOnShield();
+	bool isShieldOn();
+	void useShield(int damage);
 	void setTexture(SDL_Texture* _newTexture);
 	SDL_Texture* getTexture();
 	void setSingleStrike();
@@ -43,6 +46,8 @@ private:
 	std::vector<std::shared_ptr<Strike>> _strikes;
 	SDL_Texture* _PTexture;
 	int _health;
+	int _shield;
+	bool _isShield;
 	StrikeType _strikeType;
 	bool _rightWep;
 };

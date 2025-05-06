@@ -8,6 +8,8 @@ Player::Player()
 	this->_body.h = 50.0f;
 
 	this->_health = 100;
+	this->_shield = 0;
+	this->_isShield = false;
 	this->_rightWep = true;
 
 	this->_PTexture = nullptr;
@@ -178,6 +180,30 @@ bool Player::playerAlive()
 int Player::getHealth()
 {
 	return this->_health;
+}
+
+void Player::turnOnShield()
+{
+	this->_isShield = true;
+	this->_shield = 50;
+}
+
+bool Player::isShieldOn()
+{
+	if (this->_isShield) {
+		return true;
+	}
+	return false;
+}
+
+void Player::useShield(int damage)
+{
+	this->_shield -= damage;
+	if (this->_shield <= 0)
+	{
+		this->_isShield = false;
+		this->_shield = 0;
+	}
 }
 
 void Player::setTexture(SDL_Texture* _newTexture)

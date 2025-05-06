@@ -39,6 +39,8 @@ private:
 	SDL_Surface* _surface;
 	SDL_Texture* _PTexture;	 // Player texture
 	SDL_Texture* _P2Texture; // Player_second texture for animation
+	SDL_Texture* _PShieldTexture; // Player shield texture
+	SDL_Texture* _P2ShieldTexture; // Player_second texture for shield animation
 	SDL_Texture* _PCollTexture; // Player collision texture
 	SDL_Texture* _MTexture;	// Meteor texture
 	SDL_Texture* _BGTexture; // Backgound texture
@@ -87,6 +89,7 @@ private:
 	void updateEnemy(); // Updates enemy object
 	void updateMeteor(); // Updates meteor object
 	void updatePickups(); // Updates pickups object
+	void updateBgObjects(); // Updates background objects
 
 	void eventHandler(); // Handle the updates
 	void updateMouse(); // Updates mouse position
