@@ -180,7 +180,7 @@ void Engine::updateMeteor()
 				this->_meteors[i]->setTexture(this->_SmExTexture);
 				this->_ExAnimTime = SDL_GetTicks();
 			}
-			if (SDL_GetTicks() - this->_PCollTime >= 150 && !this->_player->isShieldOn()) {
+			if (SDL_GetTicks() - this->_PCollTime >= 150 && this->_player->getTexture() == this->_PCollTexture) {
 				this->_player->setTexture(this->_PTexture);
 			}
 			if (this->_meteors[i] != nullptr && SDL_GetTicks() - this->_ExAnimTime >= 150 &&
@@ -394,10 +394,10 @@ void Engine::updatePlayer()
 			{
 				this->_enemies[i]->rmvStrike();
 			}
-		}
 
-		if (SDL_GetTicks() - this->_PCollTime >= 150 && !this->_player->isShieldOn()) {
-			this->_player->setTexture(this->_PTexture);
+			if (SDL_GetTicks() - this->_PCollTime >= 150 && this->_player->getTexture() == this->_PCollTexture) {
+				this->_player->setTexture(this->_PTexture);
+			}
 		}
 	}
 	for (size_t i = 0; i < this->_pickups.size(); i++)
@@ -576,7 +576,7 @@ void Engine::initVariables()
 	this->_EnemySTime = SDL_GetTicks();
 	this->_PlayerSTime = SDL_GetTicks();
 	this->_pickupTime = SDL_GetTicks();
-	this->_PCollTime = 0;
+	this->_PCollTime = SDL_GetTicks();
 
 	this->_bgBody.x = 0;
 	this->_bgBody.y = 0;
