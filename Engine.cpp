@@ -231,7 +231,7 @@ void Engine::updatePickups()
 
 		for (size_t i = 0; i < this->_pickups.size(); i++)
 		{
-			if (i == 1) {
+			if (i == distrType(gen)) {
 				this->_pickups[i]->setSpawn(true);
 				switch (this->_pickups[i]->getType())
 				{
