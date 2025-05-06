@@ -7,7 +7,6 @@ enum PickupsType
 	Health,
 	Shield,
 	DoubleStrike,
-	TripleStrike,
 	None
 };
 

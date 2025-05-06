@@ -193,6 +193,11 @@ SDL_Texture* Player::getTexture()
 	return this->_PTexture;
 }
 
+void Player::setSingleStrike()
+{
+	this->_strikeType = StrikeType::SingleStrike;
+}
+
 void Player::setDoubleStrike()
 {
 	this->_strikeType = StrikeType::DoubleStrike;

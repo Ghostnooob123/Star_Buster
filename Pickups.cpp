@@ -8,8 +8,8 @@ Pickups::Pickups()
 
 	this->_body.x = static_cast<float>(distrX(gen));
 	this->_body.y = -100.0f;
-	this->_body.w = 30.0f;
-	this->_body.h = 30.0f;
+	this->_body.w = 40.0f;
+	this->_body.h = 40.0f;
 
 	this->_P_UPTexture = nullptr;
 	this->_type = PickupsType::None;
@@ -71,6 +71,6 @@ void Pickups::reset()
 
 	this->_body.x = static_cast<float>(distrX(gen));
 	this->_body.y = -100.0f;
-	this->_body.w = 30.0f;
-	this->_body.h = 30.0f;
+	this->_body.w = 40.0f;
+	this->_body.h = 40.0f;
 }

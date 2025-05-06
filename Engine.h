@@ -39,11 +39,15 @@ private:
 	SDL_Surface* _surface;
 	SDL_Texture* _PTexture;	 // Player texture
 	SDL_Texture* _P2Texture; // Player_second texture for animation
+	SDL_Texture* _PCollTexture; // Player collision texture
 	SDL_Texture* _MTexture;	// Meteor texture
 	SDL_Texture* _BGTexture; // Backgound texture
 	SDL_Texture* _STexture; // Strike texture
 	SDL_Texture* _ETexture; // Enemy texture
 	SDL_Texture* _P_UPTexture; // Pickups texture
+	SDL_Texture* _DB_Texture; // Double bullets texture
+	SDL_Texture* _shieldTexture; // Shield texture
+	SDL_Texture* _HPTexture; // Health pickups texture
 
 	SDL_Texture* _SmExTexture; // Small explosion texture
 	SDL_Texture* _BigExTexture;	// Big explosion texture
@@ -71,6 +75,7 @@ private:
 	Uint32 _PlayerSTime; // Player strike interval 
 	Uint32 _EnemySTime; // Enemy strike interval 
 	Uint32 _pickupTime; // Pickup spawn timer	
+	Uint32 _PCollTime; // Player collision timer
 
 	SDL_Rect _bgBody; // Background rect 
 	std::vector<std::shared_ptr<Meteor>> _meteors; // Stores meteors objects

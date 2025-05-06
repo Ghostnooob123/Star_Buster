@@ -35,6 +35,7 @@ public:
 	int getHealth();
 	void setTexture(SDL_Texture* _newTexture);
 	SDL_Texture* getTexture();
+	void setSingleStrike();
 	void setDoubleStrike();
 private:
 	SDL_FRect _body;
