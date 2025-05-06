@@ -5,6 +5,7 @@
 #include <random>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
@@ -16,6 +17,7 @@
 #include "Player.h"
 #include "Meteor.h"
 #include "Enemy.h"
+#include "Pickups.h"
 
 class Engine
 {
@@ -33,17 +35,26 @@ private:
 	SDL_Renderer* _renderer; // Renderer
 	SDL_Event _event; // Event handler
 
+	// TEXTURES
 	SDL_Surface* _surface;
 	SDL_Texture* _PTexture;	 // Player texture
 	SDL_Texture* _P2Texture; // Player_second texture for animation
+	SDL_Texture* _PShieldTexture; // Player shield texture
+	SDL_Texture* _P2ShieldTexture; // Player_second texture for shield animation
+	SDL_Texture* _PCollTexture; // Player collision texture
 	SDL_Texture* _MTexture;	// Meteor texture
 	SDL_Texture* _BGTexture; // Backgound texture
 	SDL_Texture* _STexture; // Strike texture
 	SDL_Texture* _ETexture; // Enemy texture
+	SDL_Texture* _P_UPTexture; // Pickups texture
+	SDL_Texture* _DB_Texture; // Double bullets texture
+	SDL_Texture* _shieldTexture; // Shield texture
+	SDL_Texture* _HPTexture; // Health pickups texture
 
 	SDL_Texture* _SmExTexture; // Small explosion texture
 	SDL_Texture* _BigExTexture;	// Big explosion texture
 
+	// FONT & SURFACE
 	TTF_Font* _fontUI; // TTF for global font UI
 	SDL_Surface* _surfaceText; // Surface only for UI
 
@@ -65,23 +76,26 @@ private:
 	Uint32 _EnemyTime; // Enemy spawn timer
 	Uint32 _PlayerSTime; // Player strike interval 
 	Uint32 _EnemySTime; // Enemy strike interval 
+	Uint32 _pickupTime; // Pickup spawn timer	
+	Uint32 _PCollTime; // Player collision timer
 
 	SDL_Rect _bgBody; // Background rect 
 	std::vector<std::shared_ptr<Meteor>> _meteors; // Stores meteors objects
 	std::unique_ptr<Player> _player; // Player object
 	std::vector<std::shared_ptr<Enemy>> _enemies; // Stores enemy objects
-	size_t _enemyCount; // Enemy count
-	bool _newEnemy; // New enemy object
+	std::vector<std::shared_ptr<Pickups>> _pickups; // Stores pickups objects
 
 	void updatePlayer(); // Updates player object
 	void updateEnemy(); // Updates enemy object
-	bool allEnemiesDestroyed() const; // Check if all enemies are destroyed
 	void updateMeteor(); // Updates meteor object
+	void updatePickups(); // Updates pickups object
+	void updateBgObjects(); // Updates background objects
 
 	void eventHandler(); // Handle the updates
 	void updateMouse(); // Updates mouse position
 	void restart(); // Restart the game
 	void exit(); // Exit the game and release necessary objects	from the memory
+	bool allEnemiesDestroyed() const; // Check if all enemies are destroyed
 
 	void initVariables();
 	void initWindow();

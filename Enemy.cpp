@@ -18,7 +18,7 @@ Enemy::Enemy()
 	this->_moveDw = true;
 
 	this->_isStrike = false;
-	this->health = 100;
+	this->health = 110;
 }
 
 Enemy::~Enemy()

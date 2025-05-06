@@ -8,10 +8,13 @@ Player::Player()
 	this->_body.h = 50.0f;
 
 	this->_health = 100;
+	this->_shield = 0;
+	this->_isShield = false;
 	this->_rightWep = true;
-	this->_strike = nullptr;
 
 	this->_PTexture = nullptr;
+
+	this->_strikeType = StrikeType::SingleStrike;
 }
 
 Player::~Player()
@@ -26,64 +29,144 @@ SDL_FRect& Player::getBody()
 
 void Player::updateStrike()
 {
-	if (this->existingStrike())
+	switch (this->_strikeType)
 	{
-		moveObj(0.0f, -15.0f, this->_strike);
-
-		if (this->_strike->getBody().y < -20.0f) {
-			this->rmvStrike();
+	case StrikeType::SingleStrike: {
+		for (size_t i = 0; i < this->_strikes.size(); i++)
+		{
+			if (this->_strikes[i])
+			{
+				moveObj(0.0f, -12.0f, this->_strikes[i]);
+				if (this->_strikes[i]->getBody().y < -20.0f) {
+					this->rmvStrike(this->_strikes[i]);
+				}
+			}
 		}
+		break;
+	}
+	case StrikeType::DoubleStrike: {
+		for (size_t i = 0; i < this->_strikes.size(); i++)
+		{
+			if (this->_strikes[i])
+			{
+				moveObj(0.0f, -10.0f, this->_strikes[i]);
+				if (this->_strikes[i]->getBody().y < -20.0f) {
+					this->rmvStrike(this->_strikes[i]);
+				}
+			}
+		}
+		break;
+	}
 	}
 }
 
-const SDL_FRect& Player::renderStrike()
-{
-	return this->_strike->getBody();
-}
 
-SDL_FRect& Player::getStrikeBody()
+std::vector<std::shared_ptr<Strike>> Player::getStrikes()
 {
-	return this->_strike->getBody();
+	return this->_strikes;
 }
 
 bool Player::existingStrike()
 {
-	if (this->_strike)
+	for (size_t i = 0; i < this->_strikes.size(); i++)
 	{
-		return true;
+		if (this->_strikes[i])
+		{
+			return true;
+		}
 	}
 	return false;
 }
 
-void Player::rmvStrike()
+void Player::rmvStrike(std::shared_ptr<Strike> strike)
 {
-	this->_strike = nullptr;
+	auto it = std::remove_if(this->_strikes.begin(), this->_strikes.end(),
+		[&](const std::shared_ptr<Strike>& s) {
+			return s == strike;
+		});
+
+	if (it != this->_strikes.end())
+	{
+		this->_strikes.erase(it, this->_strikes.end());
+	}
 }
 
 void Player::shoot()
 {
-	this->_strike = std::make_shared<Strike>();
-	if (this->existingStrike())
+	switch (this->_strikeType)
 	{
-		this->_strike->getBody().w = 40;
-		this->_strike->getBody().h = 60;
-		if (this->_rightWep)
+	case StrikeType::SingleStrike:
+	{
+		std::shared_ptr<Strike> strike = std::make_shared<Strike>();
+
+		if (!this->existingStrike())
 		{
-			this->_strike->getBody().x = this->_body.x - 10.0f;
-			this->_rightWep = false;
+			strike->getBody().w = 40;
+			strike->getBody().h = 60;
+			if (this->_rightWep)
+			{
+				strike->getBody().x = this->_body.x - 10.0f;
+				this->_rightWep = false;
+			}
+			else
+			{
+				strike->getBody().x = this->_body.x + 20.0f;
+				this->_rightWep = true;
+			}
+			strike->getBody().y = this->_body.y;
+			this->_strikes.push_back(strike);
 		}
-		else
-		{
-			this->_strike->getBody().x = this->_body.x + 20.0f;
-			this->_rightWep = true;
-		}
-		this->_strike->getBody().y = this->_body.y;
 	}
+	break;
+	case StrikeType::DoubleStrike:
+	{
+		std::shared_ptr<Strike> strike_1 = std::make_shared<Strike>();
+		std::shared_ptr<Strike> strike_2 = std::make_shared<Strike>();
+		if (!this->existingStrike())
+		{
+			strike_1->getBody().w = 40;
+			strike_1->getBody().h = 60;
+
+			strike_2->getBody().w = 40;
+			strike_2->getBody().h = 60;
+			if (this->_rightWep)
+			{
+				strike_1->getBody().x = this->_body.x - 10.0f;
+				strike_2->getBody().x = this->_body.x - 10.0f;
+				this->_rightWep = false;
+			}
+			else
+			{
+				strike_1->getBody().x = this->_body.x + 20.0f;
+				strike_2->getBody().x = this->_body.x + 20.0f;
+				this->_rightWep = true;
+			}
+			strike_1->getBody().y = this->_body.y;
+			strike_2->getBody().y = this->_body.y - 60.0f;
+		}
+		this->_strikes.push_back(strike_1);
+		this->_strikes.push_back(strike_2);
+	}
+	break;
+	}
+
 }
 
 void Player::setHealth(int dmg)
 {
 	this->_health -= dmg;
+}
+
+void Player::heal(int heal)
+{
+	if (this->_health + heal > 100)
+	{
+		this->_health = 100;
+	}
+	else
+	{
+		this->_health += heal;
+	}
 }
 
 bool Player::playerAlive()
@@ -99,6 +182,30 @@ int Player::getHealth()
 	return this->_health;
 }
 
+void Player::turnOnShield()
+{
+	this->_isShield = true;
+	this->_shield = 50;
+}
+
+bool Player::isShieldOn()
+{
+	if (this->_isShield) {
+		return true;
+	}
+	return false;
+}
+
+void Player::useShield(int damage)
+{
+	this->_shield -= damage;
+	if (this->_shield <= 0)
+	{
+		this->_isShield = false;
+		this->_shield = 0;
+	}
+}
+
 void Player::setTexture(SDL_Texture* _newTexture)
 {
 	if (_newTexture)
@@ -110,4 +217,14 @@ void Player::setTexture(SDL_Texture* _newTexture)
 SDL_Texture* Player::getTexture()
 {
 	return this->_PTexture;
+}
+
+void Player::setSingleStrike()
+{
+	this->_strikeType = StrikeType::SingleStrike;
+}
+
+void Player::setDoubleStrike()
+{
+	this->_strikeType = StrikeType::DoubleStrike;
 }
